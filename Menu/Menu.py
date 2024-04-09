@@ -1,8 +1,11 @@
-from Menu.MenuConsts import menuConst
-from App.Setting import settingClass
+import sys
+sys.path.append('/media/ciamcio/SandDisk/NiDUC/Project/NIDUC_PROJ/')
+from MenuConsts import *
+from App.Settings import * 
+
 class Menu:
     def __init__(self):
-        settings = settingClass() 
+        settings = Setting() 
         self.option = 0
         self.printMainMenu() 
 
@@ -13,7 +16,7 @@ class Menu:
         print("3. Print results")
         print("4. Save to file")
         print("Enter number related to the option")
-        self.inputController(menuConst.mainMenuLowerBounderie, menuConst.mainMenuHigherBounderie)
+        self.inputController(MenuConsts.mainMenuLowerBounderie, MenuConsts.mainMenuHigherBounderie)
         self.mainMenuControler()
 
     def inputController(self, lowerLimit, higherLimit):
@@ -33,11 +36,11 @@ class Menu:
            return True 
 
     def mainMenuControler(self):
-        if menuConst.simulationSettings == self.getOption():
+        if MenuConsts.simulationSettings == self.getOption():
             self.simulationSettings()
-        elif menuConst.printChart == self.getOption():
+        elif MenuConsts.printChart == self.getOption():
             self.printChart()
-        elif menuConst.printResults == self.getOption():
+        elif MenuConsts.printResults == self.getOption():
             self.printResults()
         else:
             self.saveToFile()
