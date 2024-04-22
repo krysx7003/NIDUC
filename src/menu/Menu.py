@@ -1,10 +1,10 @@
-from . import MenuConsts as menuConsts
-from ..settings import Settings as set 
+from .MenuConsts import MenuConsts as menuConsts
+from ..settings.Settings import Setting  
 
 class Menu:
     # Consturctor of main class which instalizes the variables of class
     def __init__(self):
-        settings = set.Setting() 
+        settings = Setting() 
         self.option = 0
         self.shouldExit= False;
 
@@ -12,7 +12,7 @@ class Menu:
     def mainMenuRunner(self):
         while not self.shouldExit:
             self.printMainMenu()
-            self.setOption(self.inputController(menuConsts.MenuConsts.mainMenuLowerBounderie, menuConsts.MenuConsts.mainMenuHigherBounderie))
+            self.setOption(self.inputController(menuConsts.mainMenuLowerBounderie, menuConsts.mainMenuHigherBounderie))
             self.mainMenuControler()
 
     # Print main menu with options
@@ -54,15 +54,15 @@ class Menu:
 
     # Controler of main menu, who based on the option invokes next operations
     def mainMenuControler(self):
-        if menuConsts.MenuConsts.simulationSettings.value == self.getOption():
+        if menuConsts.simulationSettings.value == self.getOption():
             self.simulationSettings()
-        elif menuConsts.MenuConsts.printChart.value == self.getOption():
+        elif menuConsts.printChart.value == self.getOption():
             self.printChart()
-        elif menuConsts.MenuConsts.printResults.value == self.getOption():
+        elif menuConsts.printResults.value == self.getOption():
             self.printResults()
-        elif menuConsts.MenuConsts.saveToFile.value == self.getOption():
+        elif menuConsts.saveToFile.value == self.getOption():
             self.saveToFile()
-        elif menuConsts.MenuConsts.exitApp.value == self.getOption():
+        elif menuConsts.exitApp.value == self.getOption():
             self.exitApp() 
 
     def simulationSettings(self):

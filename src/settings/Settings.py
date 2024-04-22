@@ -1,14 +1,11 @@
+from ..simulationElements import *
 class Setting:
+    __SETTINGS_MAIN_MENU = ["Shop settings", "Client settings", "Current settings", "Back"]
     def __init__(self):
-        self.__shopType = "DEAFULT VALUE" 
-    def getShopType(self):
-        return self.__shopType
-    def setShopType(self, shopType):
-        if (shopType == "self-service"):
-            self.__shopType = "self-service"
-        elif (shopType == "mixed"):
-            self.__shopType = "mixed"
-        elif (shopType == "cashier-service"):
-            self.__shopType = "cashier-service"
-        else:
-            print("Shop type not supported")
+        self.__listOfClients = []
+        self.__shop = None
+
+    def printOptionMenu(self): 
+        for i in range(len(Setting.__SETTINGS_MAIN_MENU)):
+            print(i+1, Setting.__SETTINGS_MAIN_MENU[i])
+        return
