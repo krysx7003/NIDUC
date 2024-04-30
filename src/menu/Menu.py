@@ -52,47 +52,46 @@ class Menu:
         shop.setSelfServiceCheckoutsNumber(num_self_service_checkouts)
         return shop
 
+    # Metody run_shift,generate_customers,process_customers_queue odwołują się do kilentów jako customers w reszcie programu są to clients trzeba to znormalizować
     def run_shift(self, shift):
         # Ustaw czas początku i końca zmiany
         start_time, end_time = (6, 14) if shift == 1 else (14, 22)
-
         # Przetwarzanie klientów dla każdej godziny zmiany
         for hour in range(start_time, end_time):
             self.time.current_time = hour
-            customers_this_hour = self.generate_customers()
-            for customer in customers_this_hour:
-                self.queue.add_customer(customer)
-                self.process_customers_queue()
+            clients_this_hour = self.generate_clients()
+            for client in clients_this_hour:
+                self.queue.add_client(client)
+                self.process_clients_queue()
 
-    def generate_customers(self):
+    def generate_clients(self):
         # Generowanie klientów z krzywej gaussa, z najwyższym punktem około godziny 15
         mean = 15 - self.time.current_time  # przesunięcie średniej
-        num_customers = int(abs(np.random.normal(mean, 1)) * 10)  # przykładowe wartości
-        return [Client() for _ in range(num_customers)]
+        num_clients = int(abs(np.random.normal(mean, 1)) * 10)  # przykładowe wartości
+        return [Client() for _ in range(num_clients)]
 
-    def process_customers_queue(self):
+    def process_clients_queue(self):
         # Przetwarzanie kolejki klientów
         while not self.queue.is_empty() and self.shop.is_open():
             for employee in self.employees:
                 if employee.is_on_shift(self.time.current_time):
                     # Obsłuż klientów, zakładając, że każdy pracownik może obsłużyć około 3 klientów na minutę
-                    customers_to_process = min(self.queue.get_length(), employee.process_customers(1))
-                    for _ in range(customers_to_process):
-                        customer = self.queue.remove_customer()
-                        self.profit_calculator.add_profit(customer.get_spent_money())
+                    clients_to_process = min(self.queue.get_length(), employee.process_clients(1))
+                    for _ in range(clients_to_process):
+                        client = self.queue.remove_client(0)
+                        self.profit_calculator.add_profit(client.get_spent_money())
+                    # Zwiększ czas który czekali klienci w kolejce
+                    self.queue.tick_time(1) # 1 minuta
                     # Sprawdź, czy klienci nie oczekiwali zbyt długo
-                    self.queue.remove_long_waiting_customers(30)  # 30 minut
+                    self.queue.remove_long_waiting_clients(30)  # 30 minut
+                    # Dodaj pieniądze które mogli wydać nie obsłużeni kilenci jako stracone zyski
+                    self.profit_calculator.add_potentials_profit(self.queue.get_profit_lost())
 
-    # Metoda sprawdzająca, czy klasa jest pusta (potrzebna dla procesowania kolejki)
-    def is_empty(self):
-        return len(self.clients) == 0
+    # Metoda zwraca prawdę jeżeli current_time jest z zakresu <6,22>(włącznie)
+    def is_open(self):
+        return self.time.current_time<=22 & self.time.current_time>=6
+    # Metody is_empty i remove_long_waiting_clients powinny znajdować się w queue tutaj można je usunąć(?)
 
-    # Metoda do usuwania klientów czekających zbyt długo
-    def remove_long_waiting_customers(self, max_waiting_time):
-        # Usuń klientów, którzy czekają dłużej niż max_waiting_time
-        self.clients = [customer for customer in self.clients if customer.waiting_time < max_waiting_time]
-        # Potencjalnie utracony zysk dla tych, którzy odeszli
-        self.potential_profit_lost += sum(customer.spent_money for customer in self.clients if customer.waiting_time >= max_waiting_time)
     # Method runs the main menu till shouldExit variable of object is changed to True
     def mainMenuRunner(self):
         while not self.shouldExit:
@@ -154,13 +153,13 @@ class Menu:
         print("Simulation setting")
         return
     def printChart(self):
-        print("Print char")
+        print("Print chart")
         return
     def printResults(self):
         print("Print results")
         return
     def saveToFile(self):
-        print("Save file");
+        print("Save file")
         return 
     def exitApp(self):
         self.shouldExit= True
