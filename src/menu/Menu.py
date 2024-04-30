@@ -1,13 +1,98 @@
 from .MenuConsts import MenuConsts as menuConsts
-from ..settings.Settings import Setting  
+from ..settings.Settings import Setting
+from ..simulationElements import Shop, ProfitCalculator,  Queue
+from ..simulationElements.Time import Time
+from ..simulationElements.Queue import Queue
+from ..simulationElements.Client import Client
+from ..simulationElements.Shop import Shop
+from ..simulationElements.Employee import Employee
+from ..simulationElements.ProfitCalculator import ProfitCalculator
+
+import random
+import numpy as np
 
 class Menu:
-    # Consturctor of main class which instalizes the variables of class
     def __init__(self):
-        settings = Setting() 
+        self.settings = Setting()
+        self.shop = None
+        self.time = Time()
+        self.profit_calculator = None
+        self.queue = Queue()
+        self.employees = []
         self.option = 0
-        self.shouldExit= False;
+        self.shouldExit = False
 
+    # ... [inne metody klasy]
+
+    def simulate_day(self):
+        # Losowanie sklepu zgodnie z poleceniem 1.
+        self.shop = self.create_random_shop()
+
+        # Symulacja zmian zgodnie z poleceniem 2.
+        for shift in range(1, 3):
+            self.run_shift(shift)
+
+        # Podsumowanie dnia
+        self.profit_calculator = ProfitCalculator(self.shop)
+        self.profit_calculator.calculate_daily_profit()
+
+    def create_random_shop(self):
+        # Losuj liczbę pracowników, kas normalnych i samoobsługowych
+        num_employees = random.randint(1, 10)  # przykładowy zakres
+        num_regular_checkouts = random.randint(1, 5)
+        num_self_service_checkouts = random.randint(1, 5)
+
+        # Tworzenie pracowników
+        self.employees = [Employee(i, f'Pracownik_{i}') for i in range(num_employees)]
+
+        # Tworzenie sklepu
+        shop = Shop()
+        shop.setWorkerNumber(num_employees)
+        shop.setRegularCheckoutsNumber(num_regular_checkouts)
+        shop.setSelfServiceCheckoutsNumber(num_self_service_checkouts)
+        return shop
+
+    def run_shift(self, shift):
+        # Ustaw czas początku i końca zmiany
+        start_time, end_time = (6, 14) if shift == 1 else (14, 22)
+
+        # Przetwarzanie klientów dla każdej godziny zmiany
+        for hour in range(start_time, end_time):
+            self.time.current_time = hour
+            customers_this_hour = self.generate_customers()
+            for customer in customers_this_hour:
+                self.queue.add_customer(customer)
+                self.process_customers_queue()
+
+    def generate_customers(self):
+        # Generowanie klientów z krzywej gaussa, z najwyższym punktem około godziny 15
+        mean = 15 - self.time.current_time  # przesunięcie średniej
+        num_customers = int(abs(np.random.normal(mean, 1)) * 10)  # przykładowe wartości
+        return [Client() for _ in range(num_customers)]
+
+    def process_customers_queue(self):
+        # Przetwarzanie kolejki klientów
+        while not self.queue.is_empty() and self.shop.is_open():
+            for employee in self.employees:
+                if employee.is_on_shift(self.time.current_time):
+                    # Obsłuż klientów, zakładając, że każdy pracownik może obsłużyć około 3 klientów na minutę
+                    customers_to_process = min(self.queue.get_length(), employee.process_customers(1))
+                    for _ in range(customers_to_process):
+                        customer = self.queue.remove_customer()
+                        self.profit_calculator.add_profit(customer.get_spent_money())
+                    # Sprawdź, czy klienci nie oczekiwali zbyt długo
+                    self.queue.remove_long_waiting_customers(30)  # 30 minut
+
+    # Metoda sprawdzająca, czy klasa jest pusta (potrzebna dla procesowania kolejki)
+    def is_empty(self):
+        return len(self.clients) == 0
+
+    # Metoda do usuwania klientów czekających zbyt długo
+    def remove_long_waiting_customers(self, max_waiting_time):
+        # Usuń klientów, którzy czekają dłużej niż max_waiting_time
+        self.clients = [customer for customer in self.clients if customer.waiting_time < max_waiting_time]
+        # Potencjalnie utracony zysk dla tych, którzy odeszli
+        self.potential_profit_lost += sum(customer.spent_money for customer in self.clients if customer.waiting_time >= max_waiting_time)
     # Method runs the main menu till shouldExit variable of object is changed to True
     def mainMenuRunner(self):
         while not self.shouldExit:

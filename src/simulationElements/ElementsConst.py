@@ -15,3 +15,10 @@ class ElementsConst:
     DEF_SHOPING_TIME = 30 # time of shoping in mins
     DEF_AVG_CART_COST = 120 # cost of the shoping cart in zł
     DEF_SHOPING_TIME_ABOUNDE = 10 # time after which the clinet will leave the shop
+
+    # employee
+    DEF_AVG_EMPLOYEE_SALARY = 3262
+
+    # SERVED CLIENTS PER MIN
+    DEF_SERVED_CLIENTS_REGULARCHECKOUT = 3
+    DEF_SERVED_CLIENTS_SELFCHECKOUT = 4

@@ -1,4 +1,4 @@
-from .elementsConst import ElementsConst as  CONST
+from .ElementsConst import ElementsConst as  CONST
 class Client: 
     def __init__(self):
         self.__shopingTime = CONST.DEF_SHOPING_TIME
