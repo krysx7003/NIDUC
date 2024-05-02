@@ -1,13 +1,12 @@
-from enum import Enum
-
-class MenuConsts(Enum):
+class MenuConsts:
     # Bounderies for simulation main menu 
     mainMenuLowerBounderie = 1
-    mainMenuHigherBounderie = 5
+    mainMenuHigherBounderie = 6
     # Options of simulation main menu
-    simulationSettings = 1
-    printChart = 2
-    printResults = 3
-    saveToFile = 4
-    exitApp = 5
+    printSimulationSettings = 1
+    setSimulationSettings = 2
+    printChart = 3
+    printResults = 4
+    saveToFile = 5
+    exitApp = 6
     
