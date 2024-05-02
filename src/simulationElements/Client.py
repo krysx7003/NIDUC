@@ -1,8 +1,10 @@
-from .elementsConst import ElementsConst as  CONST
+from .ElementsConst import ElementsConst as  CONST
+import random
 class Client: 
     def __init__(self):
         self.__shopingTime = CONST.DEF_SHOPING_TIME
         self.__averageCartCost = CONST.DEF_AVG_CART_COST
+        self.actual_cart_cost = random.normalvariate(self.__averageCartCost,10) # Na podstawie średniej wartości wyznacza losową liczbę, 10 to odchylenie std
         self.__shopingTimeAbounde = CONST.DEF_SHOPING_TIME_ABOUNDE
         self.printClinetOptions()
 
@@ -10,8 +12,13 @@ class Client:
     def printClinetOptions(self):
         for i in range(len(CONST.CLINET_OPTIONS)): 
             print(i+1, CONST.CLINET_OPTIONS[i])
-        return 
-
+        return
+     
+    # Metoda zwraca wydane pieniądze, 
+    def get_spent_money(self):
+        #....Logika umożliwiając znalezienie(lub nie znalezienie) poszukiwanych towarów
+        return self.actual_cart_cost
+        
     # GETTERS
     def getShopingTime(self):
         return self.__shopingTime
