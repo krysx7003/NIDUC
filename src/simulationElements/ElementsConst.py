@@ -18,6 +18,7 @@ class ElementsConst:
     DEF_TIME_OF_PRODUCT_PLACMENT = 10 # time of product placment in min 
     DEF_RUSH_HOURS = 16 # hour from 0-24 when the rush hour occures
 
+    #Number relevent to option
     VALUE = 1
     TYPE = 2
     REG_CHECKOUTS = 3
@@ -39,8 +40,15 @@ class ElementsConst:
     DEF_SHOPING_TIME_ABOUNDE = 10 # time after which the clinet will leave the shop
     DEF_NUMBER_OF_CLIENTS = 5 # deafault number of clients in an hour
 
+    # Numbers relevent to option
     SHOPING_TIME = 1
     CART_VALUE= 2
     ABOUNDE_TIME = 3
     CLIENT_NUM = 4
     ALL_CLIENT = 5
+
+    # employee
+    DEF_AVG_EMPLOYEE_SALARY = 3262
+    # SERVED CLIENTS PER MIN
+    DEF_SERVED_CLIENTS_REGULARCHECKOUT = 3
+    DEF_SERVED_CLIENTS_SELFCHECKOUT = 4

@@ -4,3 +4,4 @@ class SettingsConst: # Options that setting menu has
     SHOP_OPTION = 1
     CLINET_OPTION = 2
     PRINT_SET_SETTINGS = 3
+    # BACK = 4 undefine option yet

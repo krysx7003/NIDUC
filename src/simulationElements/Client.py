@@ -1,9 +1,11 @@
 from .ElementsConst import ElementsConst as  CONST
+import random
 class Client: 
     # Consturcotr of client class
     def __init__(self):
         self.__shopingTime = CONST.DEF_SHOPING_TIME
         self.__averageCartCost = CONST.DEF_AVG_CART_COST
+        self.actual_cart_cost = random.normalvariate(self.__averageCartCost,10) # Na podstawie średniej wartości wyznacza losową liczbę, 10 to odchylenie std
         self.__shopingTimeAbounde = CONST.DEF_SHOPING_TIME_ABOUNDE
         self.__numberOfCilents = CONST.DEF_NUMBER_OF_CLIENTS
 

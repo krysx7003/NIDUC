@@ -17,6 +17,7 @@ class Shop:
             print(i+1 , CONST.SHOP_OPTIONS[i])
         print("Enter relevant number: ")
 
+    # Prints currennt settings of shop
     def printController(self, input):
         if (input == CONST.VALUE):
             print("Current shop size: ", self.getSize()) 
@@ -36,6 +37,7 @@ class Shop:
             self.printSettings()
 
 
+    # Method sets the option for the shop (only one setting)
     def setController(self, userInput):
         if (userInput== CONST.VALUE):
             print("Enter shop's size: ")
@@ -74,6 +76,7 @@ class Shop:
         print("Time of product placment: ", self.getTimeOfProductPlacment())
         print("Rush hour: ", self.getRushHour())
 
+    # Function sets all the settings for the shop simulation
     def setSettings(self):
         print("WARTNING! In case of incorrect input data value of field will remain as deafult")
         print("Enter store's size: ")
@@ -91,6 +94,7 @@ class Shop:
         print("Enter rush hour for the shop: ")
         self.setRushHour(self.readInput())
 
+    # Method read input from user
     def readInput(self):
         tmp = input("> ")
         try:

@@ -53,6 +53,7 @@ class Setting:
         else:
             return False
             
+    # Settings controller which invokes the set for relevant class 
     def menuSetControler(self, userInput):
         if (userInput == CONST.SHOP_OPTION):
             self.getShop().printOptions()
@@ -96,6 +97,7 @@ class Setting:
         except(ValueError, TypeError):
             return 0
     
+    # Function clears terminal
     def clearTerminal(self):
         print("Press any key...")
         input()
