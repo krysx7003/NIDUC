@@ -36,7 +36,10 @@ class Shop:
         elif (input == CONST.ALL_SHOP):
             self.printSettings()
 
-
+    # Metoda zwraca prawdę jeżeli current_time jest z zakresu <6,22>(włącznie)
+    def is_open(self, time):
+        return time.current_time<=22 & time.current_time>=6
+    
     # Method sets the option for the shop (only one setting)
     def setController(self, userInput):
         if (userInput== CONST.VALUE):
@@ -79,7 +82,7 @@ class Shop:
     # Function sets all the settings for the shop simulation
     def setSettings(self):
         print("WARTNING! In case of incorrect input data value of field will remain as deafult")
-        print("Enter store's size: ")
+        print("Enter shop's size: ")
         self.setSize(self.readInput())
         print("Enter shop type: ")
         self.setType(input("> "))

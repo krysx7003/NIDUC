@@ -17,6 +17,7 @@ class Employee:
             raise ValueError(f"Pracownik {self.name} ({self.employee_id}) jest już na zmianie.")
         self.on_shift = True
         self.shift_start = start_time
+        self.shift_end = start_time+8
 
     def end_shift(self, end_time):
         if not self.on_shift:
@@ -28,9 +29,8 @@ class Employee:
 
     def is_on_shift(self, check_time):
         # Sprawdź czy pracownik jest na zmianie w podanym czasie
-        if self.shift_start and self.shift_end:
-            return self.shift_start <= check_time <= self.shift_end
-        return False
+        return self.shift_start <= check_time <= self.shift_end
+        
 
     def process_clients(self, minutes):
         # Zwraca liczbę klientów obsłużonych w danym czasie

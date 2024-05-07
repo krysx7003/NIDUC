@@ -8,6 +8,7 @@ class Client:
         self.actual_cart_cost = random.normalvariate(self.__averageCartCost,10) # Na podstawie średniej wartości wyznacza losową liczbę, 10 to odchylenie std
         self.__shopingTimeAbounde = CONST.DEF_SHOPING_TIME_ABOUNDE
         self.__numberOfCilents = CONST.DEF_NUMBER_OF_CLIENTS
+        self.time_waited = 0
 
     # Function prints the option for client class
     def printOptions(self):
@@ -52,7 +53,7 @@ class Client:
     def printClientSettings(self): 
         print("Shoping time: ", self.getShopingTime())
         print("Average cost of shoping cart: ", self.getAverageCartCost())
-        print("Shpoing time abounde: ", self.getShopingTimeAbounde())
+        print("Shoping time abounde: ", self.getShopingTimeAbounde())
         print("Number of clients: ", self.getNumberOfClients())
 
     # Function sets all of the client fileds by user
@@ -75,7 +76,14 @@ class Client:
         except(ValueError, TypeError):
             return 0
 
+    def get_spent_money(self):
+        return self.actual_cart_cost
 
+    def increase_time_waited(self,time_amount):
+        self.time_waited += time_amount
+    def time_in_queue(self):
+        return self.time_waited
+    
     # GETTERS
     def getShopingTime(self):
         return self.__shopingTime

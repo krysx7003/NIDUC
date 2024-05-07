@@ -1,6 +1,5 @@
 from .MenuConsts import MenuConsts as menuConsts
 from ..settings.Settings import Setting
-from ..simulationElements import Shop, ProfitCalculator,  Queue
 from ..simulationElements.Time import Time
 from ..simulationElements.Queue import Queue
 from ..simulationElements.Client import Client
@@ -57,10 +56,13 @@ class Menu:
         # Ustaw czas początku i końca zmiany
         start_time, end_time = (6, 14) if shift == 1 else (14, 22)
         # Przetwarzanie klientów dla każdej godziny zmiany
+        for employee in self.employees:
+            employee.start_shift(start_time)
         for hour in range(start_time, end_time):
             self.time.current_time = hour
             clients_this_hour = self.generate_clients()
             for client in clients_this_hour:
+                #Ten kod dodaje tylko pojedyńczego klienta 
                 self.queue.add_client(client)
                 self.process_clients_queue()
 
@@ -72,13 +74,14 @@ class Menu:
 
     def process_clients_queue(self):
         # Przetwarzanie kolejki klientów
-        while not self.queue.is_empty() and self.shop.is_open():
+        while not self.queue.is_empty() and self.shop.is_open(self.time):
             for employee in self.employees:
                 if employee.is_on_shift(self.time.current_time):
                     # Obsłuż klientów, zakładając, że każdy pracownik może obsłużyć około 3 klientów na minutę
                     clients_to_process = min(self.queue.get_length(), employee.process_clients(1))
                     for _ in range(clients_to_process):
                         client = self.queue.remove_client(0)
+                        #'NoneType' object has no attribute 'add_profit' nie ogarniam czemu tak się dzieje
                         self.profit_calculator.add_profit(client.get_spent_money())
                     # Zwiększ czas który czekali klienci w kolejce
                     self.queue.tick_time(1) # 1 minuta
@@ -86,11 +89,6 @@ class Menu:
                     self.queue.remove_long_waiting_clients(30)  # 30 minut
                     # Dodaj pieniądze które mogli wydać nie obsłużeni kilenci jako stracone zyski
                     self.profit_calculator.add_potentials_profit(self.queue.get_profit_lost())
-
-    # Metoda zwraca prawdę jeżeli current_time jest z zakresu <6,22>(włącznie)
-    def is_open(self):
-        return self.time.current_time<=22 & self.time.current_time>=6
-    # Metody is_empty i remove_long_waiting_clients powinny znajdować się w queue tutaj można je usunąć(?)
 
     # Method runs the main menu till shouldExit variable of object is changed to True
     def mainMenuRunner(self):
@@ -102,6 +100,13 @@ class Menu:
             self.mainMenuControler()
             self.clearTerminal()
 
+    def simmulationRunner(self):
+        print("How long should simmulation run")
+        daysToRun = self.readInput()
+        currentDay = 1
+        for currentDay in range(1,daysToRun):
+            self.simulate_day()
+
     # Print main menu with options
     def printMainMenu(self):
         print("Main menu of shop simulation")
@@ -110,7 +115,8 @@ class Menu:
         print("3 Print chart from the simulation")
         print("4 Print results")
         print("5 Save to file")
-        print("6 Exit application")
+        print("6 Run simulation")
+        print("7 Exit application")
         print("Enter number related to the option")
 
     # Controler of main menu, who based on the option invokes next operations
@@ -123,6 +129,8 @@ class Menu:
             self.printResults()
         elif menuConsts.saveToFile == self.getOption():
             self.saveToFile()
+        elif menuConsts.runSim== self.getOption():
+            self.startSimulation()
         elif menuConsts.exitApp== self.getOption():
             self.exitApp() 
 
@@ -133,7 +141,7 @@ class Menu:
         return
     # Function prints charts of simulation 
     def printChart(self):
-        print("Print char")
+        print("Print chart")
         return
     # Functions prints the result of simulations
     def printResults(self):
@@ -141,8 +149,11 @@ class Menu:
         return
     # Functions saves files and charts of simulation in memory storage
     def saveToFile(self):
-        print("Save file");
+        print("Save file")
         return 
+    def startSimulation(self):
+        self.simmulationRunner()
+        return
     # Function exits the application 
     def exitApp(self):
         self.shouldExit= True
@@ -170,34 +181,6 @@ class Menu:
         else:
            return True 
 
-    # Controler of main menu, who based on the option invokes next operations
-    def mainMenuControler(self):
-        if menuConsts.simulationSettings.value == self.getOption():
-            self.simulationSettings()
-        elif menuConsts.printChart.value == self.getOption():
-            self.printChart()
-        elif menuConsts.printResults.value == self.getOption():
-            self.printResults()
-        elif menuConsts.saveToFile.value == self.getOption():
-            self.saveToFile()
-        elif menuConsts.exitApp.value == self.getOption():
-            self.exitApp() 
-
-    def simulationSettings(self):
-        print("Simulation setting")
-        return
-    def printChart(self):
-        print("Print chart")
-        return
-    def printResults(self):
-        print("Print results")
-        return
-    def saveToFile(self):
-        print("Save file")
-        return 
-    def exitApp(self):
-        self.shouldExit= True
-        return 
 
 # GETTERS AND SETTERS
     def getOption(self):

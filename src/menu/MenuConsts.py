@@ -8,5 +8,6 @@ class MenuConsts:
     printChart = 3
     printResults = 4
     saveToFile = 5
-    exitApp = 6
+    runSim = 6
+    exitApp = 7
     

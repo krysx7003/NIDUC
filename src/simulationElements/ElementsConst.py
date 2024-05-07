@@ -1,7 +1,7 @@
 
 class ElementsConst:
     # SHOP OPTIONS
-    SHOP_OPTIONS = ["Store's daily takings",
+    SHOP_OPTIONS = ["Shop's daily takings",
                     "Shop type",
                     "Number of regular checkouts",
                     "Number of self-service checkouts",
@@ -49,6 +49,7 @@ class ElementsConst:
 
     # employee
     DEF_AVG_EMPLOYEE_SALARY = 3262
+    DEF_SERVED_CLIENTS_PER_MINUTE = 3
     # SERVED CLIENTS PER MIN
     DEF_SERVED_CLIENTS_REGULARCHECKOUT = 3
     DEF_SERVED_CLIENTS_SELFCHECKOUT = 4
