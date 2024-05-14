@@ -9,6 +9,7 @@ from ..simulationElements.ProfitCalculator import ProfitCalculator
 import os
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Menu:
     def __init__(self):
@@ -20,20 +21,27 @@ class Menu:
         self.employees = []
         self.option = 0
         self.shouldExit = False
+        self.days = []
+        self.profit = []
+        self.loss = []
 
     # ... [inne metody klasy]
 
     def simulate_day(self):
         # Losowanie sklepu zgodnie z poleceniem 1.
         self.shop = self.create_random_shop()
-
+        self.profit_calculator = ProfitCalculator(self.shop)
         # Symulacja zmian zgodnie z poleceniem 2.
         for shift in range(1, 3):
+            start_time = (6) if shift == 1 else (14)
+            for employee in self.employees:
+                # Rozwiązanie tymczasowe
+                if shift == 1:
+                    employee.start_shift(start_time)
             self.run_shift(shift)
-
         # Podsumowanie dnia
-        self.profit_calculator = ProfitCalculator(self.shop)
-        self.profit_calculator.calculate_daily_profit()
+        self.profit.append(self.profit_calculator.calculate_daily_profit())
+        self.loss.append(self.profit_calculator.calculate_daily_loss())
 
     def create_random_shop(self):
         # Losuj liczbę pracowników, kas normalnych i samoobsługowych
@@ -51,20 +59,16 @@ class Menu:
         shop.setSelfServiceCheckoutsNumber(num_self_service_checkouts)
         return shop
 
-    # Metody run_shift,generate_customers,process_customers_queue odwołują się do kilentów jako customers w reszcie programu są to clients trzeba to znormalizować
     def run_shift(self, shift):
         # Ustaw czas początku i końca zmiany
         start_time, end_time = (6, 14) if shift == 1 else (14, 22)
         # Przetwarzanie klientów dla każdej godziny zmiany
-        for employee in self.employees:
-            employee.start_shift(start_time)
         for hour in range(start_time, end_time):
             self.time.current_time = hour
             clients_this_hour = self.generate_clients()
             for client in clients_this_hour:
-                #Ten kod dodaje tylko pojedyńczego klienta 
                 self.queue.add_client(client)
-                self.process_clients_queue()
+            self.process_clients_queue()
 
     def generate_clients(self):
         # Generowanie klientów z krzywej gaussa, z najwyższym punktem około godziny 15
@@ -99,13 +103,14 @@ class Menu:
                 isInputValid = self.setOption(self.readInput())
             self.mainMenuControler()
             self.clearTerminal()
-
+    # Metoda pobiera długoś symulacji i ją wykonuje
     def simmulationRunner(self):
         print("How long should simmulation run")
         daysToRun = self.readInput()
         currentDay = 1
         for currentDay in range(1,daysToRun):
             self.simulate_day()
+            self.days.append(currentDay)
 
     # Print main menu with options
     def printMainMenu(self):
@@ -141,7 +146,13 @@ class Menu:
         return
     # Function prints charts of simulation 
     def printChart(self):
-        print("Print chart")
+        # Utwórz nową figurę o numerze 0 i rozdzielczości 120 dpi
+        plt.figure(0,dpi=120)
+        plt.plot(self.days,self.profit,'o',label="Profit")
+        plt.plot(self.days,self.loss,'o',label="Loss")
+        plt.legend()
+        # Pojawia się okienko z wykresem
+        plt.show()
         return
     # Functions prints the result of simulations
     def printResults(self):
@@ -151,6 +162,7 @@ class Menu:
     def saveToFile(self):
         print("Save file")
         return 
+    # Funkcja zaczyna symulacje
     def startSimulation(self):
         self.simmulationRunner()
         return
@@ -172,7 +184,10 @@ class Menu:
     # Functions clears terminal after any key was pressed
     def clearTerminal(self):
         input("Press any key...")
-        os.system('clear')
+        # 'clear' jest niedostępne dla Windowsa jeżeli nie wykonuje się poprawnie wykonaj 'cls' odpowiednik w Windowsie
+        status = os.system('clear')
+        if status != 0:
+            os.system('cls')
         
     # Checks if the input of user which is an argument is correct value from the range of numbers
     def handleInput(self, input, lowerLimit, higherLimit):
