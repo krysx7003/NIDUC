@@ -10,4 +10,3 @@ class MenuConsts:
     saveToFile = 5
     runSim = 6
     exitApp = 7
-    

@@ -1,19 +1,20 @@
 from .MenuConsts import MenuConsts as menuConsts
-from ..settings.Settings import Setting
+from ..settings.Setting import Setting
+from ..simulationElements import Shop, ProfitCalculator,  Queue
 from ..simulationElements.Time import Time
 from ..simulationElements.Queue import Queue
 from ..simulationElements.Client import Client
 from ..simulationElements.Shop import Shop
 from ..simulationElements.Employee import Employee
 from ..simulationElements.ProfitCalculator import ProfitCalculator
-import os
+
 import random
 import numpy as np
 import matplotlib.pyplot as plt
 
 class Menu:
     def __init__(self):
-        self.settings = Setting.__new__(Setting) 
+        self.settings = Setting()
         self.shop = None
         self.time = Time()
         self.profit_calculator = None
@@ -62,6 +63,7 @@ class Menu:
     def run_shift(self, shift):
         # Ustaw czas początku i końca zmiany
         start_time, end_time = (6, 14) if shift == 1 else (14, 22)
+
         # Przetwarzanie klientów dla każdej godziny zmiany
         for hour in range(start_time, end_time):
             self.time.current_time = hour
@@ -70,37 +72,40 @@ class Menu:
                 self.queue.add_client(client)
             self.process_clients_queue()
 
-    def generate_clients(self):
+    def generate_customers(self):
         # Generowanie klientów z krzywej gaussa, z najwyższym punktem około godziny 15
         mean = 15 - self.time.current_time  # przesunięcie średniej
-        num_clients = int(abs(np.random.normal(mean, 1)) * 10)  # przykładowe wartości
-        return [Client() for _ in range(num_clients)]
+        num_customers = int(abs(np.random.normal(mean, 1)) * 10)  # przykładowe wartości
+        return [Client() for _ in range(num_customers)]
 
-    def process_clients_queue(self):
+    def process_customers_queue(self):
         # Przetwarzanie kolejki klientów
-        while not self.queue.is_empty() and self.shop.is_open(self.time):
+        while not self.queue.is_empty() and self.shop.is_open():
             for employee in self.employees:
                 if employee.is_on_shift(self.time.current_time):
                     # Obsłuż klientów, zakładając, że każdy pracownik może obsłużyć około 3 klientów na minutę
-                    clients_to_process = min(self.queue.get_length(), employee.process_clients(1))
-                    for _ in range(clients_to_process):
-                        client = self.queue.remove_client(0)
-                        #'NoneType' object has no attribute 'add_profit' nie ogarniam czemu tak się dzieje
-                        self.profit_calculator.add_profit(client.get_spent_money())
-                    # Zwiększ czas który czekali klienci w kolejce
-                    self.queue.tick_time(1) # 1 minuta
+                    customers_to_process = min(self.queue.get_length(), employee.process_customers(1))
+                    for _ in range(customers_to_process):
+                        customer = self.queue.remove_customer()
+                        self.profit_calculator.add_profit(customer.get_spent_money())
                     # Sprawdź, czy klienci nie oczekiwali zbyt długo
-                    self.queue.remove_long_waiting_clients(30)  # 30 minut
-                    # Dodaj pieniądze które mogli wydać nie obsłużeni kilenci jako stracone zyski
-                    self.profit_calculator.add_potentials_profit(self.queue.get_profit_lost())
+                    self.queue.remove_long_waiting_customers(30)  # 30 minut
 
+    # Metoda sprawdzająca, czy klasa jest pusta (potrzebna dla procesowania kolejki)
+    def is_empty(self):
+        return len(self.clients) == 0
+
+    # Metoda do usuwania klientów czekających zbyt długo
+    def remove_long_waiting_customers(self, max_waiting_time):
+        # Usuń klientów, którzy czekają dłużej niż max_waiting_time
+        self.clients = [customer for customer in self.clients if customer.waiting_time < max_waiting_time]
+        # Potencjalnie utracony zysk dla tych, którzy odeszli
+        self.potential_profit_lost += sum(customer.spent_money for customer in self.clients if customer.waiting_time >= max_waiting_time)
     # Method runs the main menu till shouldExit variable of object is changed to True
     def mainMenuRunner(self):
         while not self.shouldExit:
             self.printMainMenu()
-            isInputValid = False
-            while not isInputValid: 
-                isInputValid = self.setOption(self.readInput())
+            self.setOption(self.inputController(menuConsts.mainMenuLowerBounderie, menuConsts.mainMenuHigherBounderie))
             self.mainMenuControler()
             self.clearTerminal()
     # Metoda pobiera długoś symulacji i ją wykonuje
@@ -115,36 +120,66 @@ class Menu:
     # Print main menu with options
     def printMainMenu(self):
         print("Main menu of shop simulation")
-        print("1 Print options for simulation") 
-        print("2 Set options of simulations")
-        print("3 Print chart from the simulation")
-        print("4 Print results")
-        print("5 Save to file")
-        print("6 Run simulation")
-        print("7 Exit application")
+        print("1. Print simulation settings")
+        print("2. Set simulation settings")
+        print("3. Print chart from the simulation")
+        print("4. Print results")
+        print("5. Save to file")
+        print("6. Run simulation")
+        print("7. Exit application")
         print("Enter number related to the option")
+
+    # Method controles and validates the input from the user
+    def inputController(self, lowerLimit, higherLimit):
+        isInputCorrect = False  
+        tmp = 0
+        while not isInputCorrect:
+            tmp = self.inputFromUser()
+            isInputCorrect = self.handleInput(tmp, lowerLimit, higherLimit)  
+        return int(tmp) 
+                 
+
+    # Method takes input from the user and tries to convert it to number. In case of exception method returns 0
+    def inputFromUser(self):
+        tmp = input("> ")
+        try:
+            number = int(tmp)
+            return  number
+        except(ValueError, TypeError):
+            print("Option must be a number")
+            return 0
+
+    # Checks if the input of user which is an argument is correct value from the range of numbers
+    def handleInput(self, input, lowerLimit, higherLimit):
+        if lowerLimit > int(input) or higherLimit < int(input):
+            return False
+        else:
+           return True
 
     # Controler of main menu, who based on the option invokes next operations
     def mainMenuControler(self):
-        if menuConsts.printSimulationSettings == self.getOption() or menuConsts.setSimulationSettings == self.getOption():
-            self.simulationSettings(self.getOption())
+        if menuConsts.printSimulationSettings == self.getOption():
+            self.printSimulationSettings()
+        elif menuConsts.setSimulationSettings == self.getOption():
+            self.simulationSettings()
         elif menuConsts.printChart == self.getOption():
             self.printChart()
         elif menuConsts.printResults == self.getOption():
             self.printResults()
         elif menuConsts.saveToFile == self.getOption():
             self.saveToFile()
-        elif menuConsts.runSim== self.getOption():
-            self.startSimulation()
-        elif menuConsts.exitApp== self.getOption():
-            self.exitApp() 
+        elif menuConsts.runSim == self.getOption():
+            self.runSimulation()
+        elif menuConsts.exitApp == self.getOption():
+            self.exitApp()
 
-    # Function opens the menu with settings of simulation
-    def simulationSettings(self, actionType):
-        self.clearTerminal()
-        self.settings.settingMenuRunner(actionType)
+
+    def printSimulationSettings(self):
+        print("Print Simulation Settings")
         return
-    # Function prints charts of simulation 
+    def simulationSettings(self):
+        print("Set Simulation setting")
+        return
     def printChart(self):
         # Utwórz nową figurę o numerze 0 i rozdzielczości 120 dpi
         plt.figure(0,dpi=120)
@@ -154,11 +189,10 @@ class Menu:
         # Pojawia się okienko z wykresem
         plt.show()
         return
-    # Functions prints the result of simulations
     def printResults(self):
         print("Print results")
         return
-    # Functions saves files and charts of simulation in memory storage
+    #
     def saveToFile(self):
         print("Save file")
         return 
@@ -166,9 +200,8 @@ class Menu:
     def startSimulation(self):
         self.simmulationRunner()
         return
-    # Function exits the application 
     def exitApp(self):
-        self.shouldExit= True
+        self.shouldExit = True
         return 
 
     # Method takes input from the user and tries to convert it to number. In case of exception method returns 0
@@ -200,14 +233,7 @@ class Menu:
 # GETTERS AND SETTERS
     def getOption(self):
         return self.option
-    def getSetting(self):
-        return self.settings
-
-    # Setter on booster with returned result of setting
     def setOption(self, option):
-        if ( menuConsts.mainMenuLowerBounderie <= option and menuConsts.mainMenuHigherBounderie >= option):
-            self.option = option
-            return True
-        return False
+        self.option = option
  
         
