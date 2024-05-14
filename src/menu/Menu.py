@@ -7,7 +7,7 @@ from ..simulationElements.Client import Client
 from ..simulationElements.Shop import Shop
 from ..simulationElements.Employee import Employee
 from ..simulationElements.ProfitCalculator import ProfitCalculator
-
+import os
 import random
 import numpy as np
 import matplotlib.pyplot as plt
