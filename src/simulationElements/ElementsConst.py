@@ -8,6 +8,7 @@ class ElementsConst:
                     "Number of worker",
                     "Time of product placment in shop",
                     "Rush hour",
+                    "Profit Margin",
                     "All settings"]
 
     DEF_SHOP_VALUE = 100000 # the store's daily takings in zł
@@ -26,7 +27,8 @@ class ElementsConst:
     WORKER = 5 
     TIME_OF_PRODUCT_PLACMENT = 6
     RUSH_HOUR = 7
-    ALL_SHOP = 8
+    PROFIT_MARGIN = 8
+    ALL_SHOP = 9
 
     # CLIENT OPTIONS
     CLINET_OPTIONS = ["Time of shoping",

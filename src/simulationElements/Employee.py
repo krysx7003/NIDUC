@@ -18,7 +18,7 @@ class Employee:
             raise ValueError(f"Pracownik {self.name} ({self.employee_id}) jest już na zmianie.")
         self.on_shift = True
         self.shift_start = start_time
-        self.shift_end = start_time+self.shift_length
+        self.shift_end = start_time + self.shift_length
 
     def end_shift(self, end_time):
         if not self.on_shift:

@@ -9,6 +9,7 @@ class Shop:
         self.__workerNumber = CONST.DEF_WORKER_NUMBER
         self.__timeOfProductPlacment = CONST.DEF_TIME_OF_PRODUCT_PLACMENT
         self.__rushHour = CONST.DEF_RUSH_HOURS
+        self.profit_margin = 0.4
 
     # Functions prints the options for the shop class
     def printOptions(self):
@@ -26,15 +27,18 @@ class Shop:
         elif (input == CONST.REG_CHECKOUTS):
             print("Current number of regular checkouts: ", self.getRegularCheckoutsNumber())
         elif (input == CONST.SS_CHECKOUTS):
-            print("Current number of self-service checkuots: ", self.getSelfServiceCheckoutsNumber())
+            print("Current number of self-service checkouts: ", self.getSelfServiceCheckoutsNumber())
         elif (input == CONST.WORKER):
             print("Current number of workers: ", self.getWorkerNumber())
         elif (input == CONST.TIME_OF_PRODUCT_PLACMENT):
-            print("Current time of product placemnt: ", self.getTimeOfProductPlacment())
+            print("Current time of product placement: ", self.getTimeOfProductPlacment())
         elif (input == CONST.RUSH_HOUR):
             print("Current rush hour: ", self.getRushHour())
+        elif(input == CONST.PROFIT_MARGIN):
+            print("Current profit margin: ", self.profit_margin)
         elif (input == CONST.ALL_SHOP):
             self.printSettings()
+
 
     # Metoda zwraca prawdę jeżeli current_time jest z zakresu <6,22>(włącznie)
     def is_open(self, time):
@@ -58,11 +62,14 @@ class Shop:
             print("Enter number of shop workers: ")
             self.setWorkerNumber(self.readInput())
         elif (userInput== CONST.TIME_OF_PRODUCT_PLACMENT):
-            print("Enter time of product placment: ")
+            print("Enter time of product placement: ")
             self.setTimeOfProductPlacment(self.readInput())
         elif (userInput== CONST.RUSH_HOUR):
             print("Enter a rush hour: ")
             self.setRushHour(self.readInput())
+        elif (userInput== CONST.PROFIT_MARGIN):
+            print("Enter profit margin: ")
+            self.set_profit_margin(float(input("> ")))
         elif (userInput== CONST.ALL_SHOP):
             self.setSettings() 
         
@@ -78,7 +85,7 @@ class Shop:
         print("Number of workers: ", self.getWorkerNumber())
         print("Time of product placment: ", self.getTimeOfProductPlacment())
         print("Rush hour: ", self.getRushHour())
-
+        print("Profit margin: ", self.profit_margin)
     # Function sets all the settings for the shop simulation
     def setSettings(self):
         print("WARTNING! In case of incorrect input data value of field will remain as deafult")
@@ -96,7 +103,8 @@ class Shop:
         self.setTimeOfProductPlacment(self.readInput())
         print("Enter rush hour for the shop: ")
         self.setRushHour(self.readInput())
-
+        print("Enter profit margin for the shop: ")
+        self.set_profit_margin(float(input("> ")))
     # Method read input from user
     def readInput(self):
         tmp = input("> ")
@@ -148,6 +156,10 @@ class Shop:
     def setRushHour(self, rushHour):
         if (rushHour >= 0 and rushHour <= 24):
             self.__rushHour = rushHour
-
+    def set_profit_margin(self, profit_margin):
+        if 0 <= profit_margin <= 1:
+            self.profit_margin = profit_margin
+        else:
+            print("Profit margin must be between 0 and 1")
 
 
