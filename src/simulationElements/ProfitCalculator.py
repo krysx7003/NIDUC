@@ -15,5 +15,5 @@ class ProfitCalculator:
     def add_profit(self,profit):
         self.daily_profit += profit
 
-    def add_potentials_profit(self,profit_lost):
+    def add_loss(self,profit_lost):
         self.daily_loss += profit_lost     

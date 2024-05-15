@@ -1,12 +1,12 @@
 from src.menu.MenuConsts import MenuConsts as menuConsts
 from src.settings.Setting import Setting
-from src.simulationElements import Shop, ProfitCalculator, Queue
 from src.simulationElements.Time import Time
 from src.simulationElements.Queue import Queue
 from src.simulationElements.Customer import Client
 from src.simulationElements.Shop import Shop
 from src.simulationElements.Employee import Employee
 from src.simulationElements.ProfitCalculator import ProfitCalculator
+from src.simulationElements.Checkout import SelfCheckout
 import os
 import random
 import numpy as np
@@ -20,6 +20,7 @@ class Menu:
         self.profit_calculator = None
         self.queue = Queue()
         self.employees = []
+        self.checkouts = []
         self.option = 0
         self.shouldExit = False
         self.days = []
@@ -28,9 +29,12 @@ class Menu:
 
     # ... [inne metody klasy]
 
-    def simulate_day(self):
+    def simulate_day(self,choice):
         # Losowanie sklepu zgodnie z poleceniem 1.
-        self.shop = self.create_random_shop()
+        if(choice==True):
+            self.shop = self.create_set_shop()
+        else:
+            self.shop = self.create_random_shop()
         self.profit_calculator = ProfitCalculator(self.shop)
         # Symulacja zmian zgodnie z poleceniem 2.
         for shift in range(1, 3):
@@ -44,15 +48,21 @@ class Menu:
         self.profit.append(self.profit_calculator.calculate_daily_profit())
         self.loss.append(self.profit_calculator.calculate_daily_loss())
 
+    def create_set_shop(self):
+        # Tworzenie sklepu
+        shop = Shop()
+        # Tworzenie pracowników
+        self.employees = [Employee(i, f'Pracownik_{i}') for i in range(shop.getWorkerNumber())]
+        self.checkouts = [SelfCheckout() for i in range(shop.getSelfServiceCheckoutsNumber())]
+        return shop
+    
     def create_random_shop(self):
         # Losuj liczbę pracowników, kas normalnych i samoobsługowych
         num_employees = random.randint(1, 10)  # przykładowy zakres
         num_regular_checkouts = random.randint(1, 5)
         num_self_service_checkouts = random.randint(1, 5)
-
         # Tworzenie pracowników
         self.employees = [Employee(i, f'Pracownik_{i}') for i in range(num_employees)]
-
         # Tworzenie sklepu
         shop = Shop()
         shop.setWorkerNumber(num_employees)
@@ -63,7 +73,6 @@ class Menu:
     def run_shift(self, shift):
         # Ustaw czas początku i końca zmiany
         start_time, end_time = (6, 14) if shift == 1 else (14, 22)
-
         # Przetwarzanie klientów dla każdej godziny zmiany
         for hour in range(start_time, end_time):
             self.time.current_time = hour
@@ -86,21 +95,24 @@ class Menu:
                     # Obsłuż klientów, zakładając, że każdy pracownik może obsłużyć około 3 klientów na minutę
                     customers_to_process = min(self.queue.get_length(), employee.process_customers(1))
                     for _ in range(customers_to_process):
-                        customer = self.queue.remove_customer()
+                        customer = self.queue.remove_customer(0)
                         self.profit_calculator.add_profit(customer.get_spent_money())
+                        # Sprawdź, czy klienci nie oczekiwali zbyt długo
+                        self.queue.remove_long_waiting_customers(20)  # 30 minut
+                        self.profit_calculator.add_loss(self.queue.get_loss())
+            for checkout in self.checkouts:
+                customers_to_process = min(self.queue.get_length(),checkout.get_efficency())
+                for _ in range(customers_to_process):
+                    customer = self.queue.remove_customer(0)
+                    if customer == None: 
+                        break
+                    self.profit_calculator.add_profit(customer.get_spent_money())
                     # Sprawdź, czy klienci nie oczekiwali zbyt długo
-                    self.queue.remove_long_waiting_customers(30)  # 30 minut
+                    self.queue.remove_long_waiting_customers(20)  # 30 minut
+                    self.profit_calculator.add_loss(self.queue.get_loss())
+            #Każdy pracownik i kasa samobsługowa obsłużyli x klientów na minute przechodzimy do następnej minuty
+            self.queue.tick_time(1)
 
-    # Metoda sprawdzająca, czy klasa jest pusta (potrzebna dla procesowania kolejki)
-    def is_empty(self):
-        return len(self.clients) == 0
-
-    # Metoda do usuwania klientów czekających zbyt długo
-    def remove_long_waiting_customers(self, max_waiting_time):
-        # Usuń klientów, którzy czekają dłużej niż max_waiting_time
-        self.clients = [customer for customer in self.clients if customer.waiting_time < max_waiting_time]
-        # Potencjalnie utracony zysk dla tych, którzy odeszli
-        self.potential_profit_lost += sum(customer.spent_money for customer in self.clients if customer.waiting_time >= max_waiting_time)
     # Method runs the main menu till shouldExit variable of object is changed to True
     def mainMenuRunner(self):
         while not self.shouldExit:
@@ -111,11 +123,18 @@ class Menu:
     # Metoda pobiera długoś symulacji i ją wykonuje
     def simmulationRunner(self):
         print("How long should simmulation run")
+        self.profit = []
+        self.loss = []
+        self.days = []
         daysToRun = self.readInput()
         currentDay = 1
-        for currentDay in range(1,daysToRun):
-            self.simulate_day()
+        for currentDay in range(1,daysToRun+1):
+            self.simulate_day(True)
             self.days.append(currentDay)
+            #Zaczynając od dnia poerwszego symulacji co 30 dni pracownicy dostają wypłatę
+            if currentDay == 1 or currentDay % 30 == 0:
+                for employee in self.employees:
+                    self.loss[currentDay-1] += employee.get_paid()
 
     # Print main menu with options
     def printMainMenu(self):
@@ -181,8 +200,9 @@ class Menu:
     def printChart(self):
         # Utwórz nową figurę o numerze 0 i rozdzielczości 120 dpi
         plt.figure(0,dpi=120)
-        plt.plot(self.days,self.profit,'o',label="Profit")
-        plt.plot(self.days,self.loss,'o',label="Loss")
+        for i in range(0,len(self.profit)):
+            self.profit[i] -= self.loss[i]
+        plt.plot(self.days,self.profit,label="Profit")
         plt.legend()
         # Pojawia się okienko z wykresem
         plt.show()
@@ -190,9 +210,9 @@ class Menu:
     def printResults(self):
         if self.profit_calculator:
             daily_profit = self.profit_calculator.daily_profit
-            potential_profit_lost = self.profit_calculator.potential_profit_lost
+            daily_loss = self.profit_calculator.daily_loss
             print(f"Daily profit: {daily_profit}")
-            print(f"Potential profit lost: {potential_profit_lost}")
+            print(f"Daily loss: {daily_loss}")
         else:
             print("No results available. Please run the simulation first.")
     #

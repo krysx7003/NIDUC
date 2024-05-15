@@ -17,3 +17,6 @@ class SelfCheckout(Checkout):
     def __init__(self):
         # Kasa samoobsługowa obsługuje średnio 4 klientów na minutę
         super().__init__(efficiency=4)
+
+    def get_efficency(self):
+        return self.efficiency

@@ -78,7 +78,7 @@ class Setting:
             self.__shop.printSettings()
         if (isinstance(self.__client, Client)):
             print("----- CLINET SETTINGS -----")
-            self.__client.printClientSettings()
+            self.__client.printCustomerSettings()
     
     def setAllAettings(self):
         if (isinstance(self.__shop, Shop)):
