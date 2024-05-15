@@ -23,24 +23,25 @@ class Menu:
         self.option = 0
         self.shouldExit = False
         self.days = []
-        self.sales = []
-        self.costs = []
+        self.profit = []
         self.loss = []
 
-    def simulate_day(self,num_days):
-        if self.shop is None:
-            self.shop = self.create_random_shop()
+    # ... [inne metody klasy]
+
+    def simulate_day(self):
+        # Losowanie sklepu zgodnie z poleceniem 1.
+        self.shop = self.create_random_shop()
         self.profit_calculator = ProfitCalculator(self.shop)
+        # Symulacja zmian zgodnie z poleceniem 2.
         for shift in range(1, 3):
-            start_time = 6 if shift == 1 else 14
-            end_time = 14 if shift == 1 else 22  # Dodanie end_time dla zakończenia zmiany
+            start_time = (6) if shift == 1 else (14)
             for employee in self.employees:
-                if employee.on_shift:
-                    employee.end_shift(end_time)
-                employee.start_shift(start_time)  # Rozpoczęcie nowej zmiany
+                # Rozwiązanie tymczasowe
+                if shift == 1:
+                    employee.start_shift(start_time)
             self.run_shift(shift)
-        self.sales.append(self.profit_calculator.calculate_daily_sales())
-        self.costs.append(self.profit_calculator.calculate_daily_costs(num_days, self.employees))
+        # Podsumowanie dnia
+        self.profit.append(self.profit_calculator.calculate_daily_profit())
         self.loss.append(self.profit_calculator.calculate_daily_loss())
 
     def create_random_shop(self):
@@ -85,7 +86,7 @@ class Menu:
                     # Obsłuż klientów, zakładając, że każdy pracownik może obsłużyć około 3 klientów na minutę
                     customers_to_process = min(self.queue.get_length(), employee.process_customers(1))
                     for _ in range(customers_to_process):
-                        customer = self.queue.remove_customer(0)
+                        customer = self.queue.remove_customer()
                         self.profit_calculator.add_profit(customer.get_spent_money())
                     # Sprawdź, czy klienci nie oczekiwali zbyt długo
                     self.queue.remove_long_waiting_customers(30)  # 30 minut
@@ -106,14 +107,15 @@ class Menu:
             self.printMainMenu()
             self.setOption(self.inputController(menuConsts.mainMenuLowerBounderie, menuConsts.mainMenuHigherBounderie))
             self.mainMenuControler()
+            self.clearTerminal()
     # Metoda pobiera długoś symulacji i ją wykonuje
     def simmulationRunner(self):
         print("How long should simmulation run")
-        days_to_run = self.readInput()
-        for current_day in range(1, days_to_run + 1):
-            self.simulate_day(days_to_run)
-            self.days.append(current_day)
-
+        daysToRun = self.readInput()
+        currentDay = 1
+        for currentDay in range(1,daysToRun):
+            self.simulate_day()
+            self.days.append(currentDay)
 
     # Print main menu with options
     def printMainMenu(self):
@@ -179,22 +181,18 @@ class Menu:
     def printChart(self):
         # Utwórz nową figurę o numerze 0 i rozdzielczości 120 dpi
         plt.figure(0,dpi=120)
-        plt.plot(self.days, self.sales, 'o', label="Sales")
-        plt.plot(self.days, self.costs, 'o', label="Costs")
-        plt.plot(self.days, self.loss, 'o', label="Loss")
+        plt.plot(self.days,self.profit,'o',label="Profit")
+        plt.plot(self.days,self.loss,'o',label="Loss")
         plt.legend()
         # Pojawia się okienko z wykresem
         plt.show()
         return
-
     def printResults(self):
-        if self.sales:  # Sprawdzamy, czy lista sprzedaży nie jest pusta
-            daily_sales = self.sales[-1]  # Ostatni wynik sprzedaży
-            daily_costs = self.costs[-1]  # Ostatni wynik kosztów
-            daily_loss = self.loss[-1]  # Ostatni wynik strat
-            print(f"Daily sales: {daily_sales}")
-            print(f"Daily costs: {daily_costs}")
-            print(f"Daily loss: {daily_loss}")
+        if self.profit_calculator:
+            daily_profit = self.profit_calculator.daily_profit
+            potential_profit_lost = self.profit_calculator.potential_profit_lost
+            print(f"Daily profit: {daily_profit}")
+            print(f"Potential profit lost: {potential_profit_lost}")
         else:
             print("No results available. Please run the simulation first.")
     #

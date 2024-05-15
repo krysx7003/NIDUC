@@ -33,5 +33,5 @@ class Queue:
     # GETTERS
     def get_length(self):
         return len(self.clients)
-    def get_profit_lost(self):
+    def get_loss(self):
         return self.profit_lost

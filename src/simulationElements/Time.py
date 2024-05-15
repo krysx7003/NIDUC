@@ -1,6 +1,7 @@
 class Time:
     def __init__(self):
         self.current_time = 6  # Sklep otwiera się o 6:00
+        self.current_minute = 0
 
     def advance(self):
         self.current_time += 1  # Przejdź do następnej godziny

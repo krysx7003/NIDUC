@@ -2,8 +2,6 @@ import datetime
 from .ElementsConst import ElementsConst as CONST
 
 class Employee:
-    salary = CONST.DEF_AVG_EMPLOYEE_SALARY  # stałe wynagrodzenie miesięczne dla pracownika
-
     def __init__(self, employee_id, name):
         self.employee_id = employee_id
         self.name = name
@@ -12,6 +10,7 @@ class Employee:
         self.shift_start = None
         self.shift_end = None
         self.shift_length = CONST.DEF_TIME_ON_SHIFT
+        self.salary = CONST.DEF_AVG_EMPLOYEE_SALARY  # stałe wynagrodzenie miesięczne dla pracownika
 
     def start_shift(self, start_time):
         if self.on_shift:
@@ -31,7 +30,9 @@ class Employee:
     def is_on_shift(self, check_time):
         # Sprawdź czy pracownik jest na zmianie w podanym czasie
         return self.shift_start <= check_time <= self.shift_end
-        
+
+    def get_paid(self):
+        return  self.salary
 
     def process_customers(self, minutes):
         # Zwraca liczbę klientów obsłużonych w danym czasie
