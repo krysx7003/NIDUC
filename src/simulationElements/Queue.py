@@ -3,10 +3,10 @@ class Queue:
         self.clients = []
         self.profit_lost = 0
 
-    def add_client(self, client):
+    def add_customer(self, client):
         self.clients.append(client)
 
-    def remove_client(self,remove_id):
+    def remove_customer(self,remove_id):
         if self.clients:
             return  self.clients.pop(remove_id)
         else: 
@@ -20,14 +20,14 @@ class Queue:
             self.clients[_].increase_time_waited(time_amount)
 
     # Metoda która wyszukuje kilentów którzy czekali zbyt długo a następnie ich usuwa
-    def remove_long_waiting_clients(self,long_time):
+    def remove_long_waiting_customers(self,long_time):
         self.profit_lost = 0
         i = 0
         while i < len(self.clients)-1:
             if(self.clients[i].time_in_queue()>=long_time):
                 # Pieniądze które kilent mógł wydać zostają dodane do strat
                 self.profit_lost += self.clients[i].get_spent_money()
-                self.remove_client(i)
+                self.remove_customer(i)
             i += 1
     
     # GETTERS

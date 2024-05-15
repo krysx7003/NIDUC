@@ -1,6 +1,6 @@
 import os
 from ..simulationElements.Shop import Shop
-from ..simulationElements.Client import Client
+from ..simulationElements.Customer import Client
 from .SettingsConst import SettingsConst as CONST
 
 class Setting:

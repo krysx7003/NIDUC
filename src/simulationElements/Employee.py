@@ -33,7 +33,7 @@ class Employee:
         return self.shift_start <= check_time <= self.shift_end
         
 
-    def process_clients(self, minutes):
+    def process_customers(self, minutes):
         # Zwraca liczbę klientów obsłużonych w danym czasie
         return self.efficiency * minutes
 
@@ -43,5 +43,5 @@ class Employee:
             worked_time = datetime.datetime.now() - self.shift_start
         else:
             worked_time = self.shift_end - self.shift_start if self.shift_end else datetime.timedelta()
-        processed_clients = self.process_clients(worked_time.total_seconds() / 60)
+        processed_clients = self.process_customers(worked_time.total_seconds() / 60)
         return f"Pracownik {self.name} ({self.employee_id}) obsłużył {processed_clients} klientów."

@@ -25,9 +25,9 @@ class Client:
         elif (usrInput == CONST.ABOUNDE_TIME):
             print("Current time after which clients will leave the shop: ", self.getShopingTimeAbounde())
         elif (usrInput == CONST.CLIENT_NUM):
-            print("Current number of clients: ", self.getNumberOfClients())
+            print("Current number of clients: ", self.getNumberOfCustomers())
         elif (usrInput == CONST.ALL_CLIENT):
-                self.printClientSettings() 
+                self.printCustomerSettings()
 
     def setController(self, usrInput):
         if (usrInput == CONST.SHOPING_TIME):
@@ -50,11 +50,11 @@ class Client:
     # Można obie te funkcje spróbować przy wykorzystaniu zmieniej połaczyć z pojeczyńczym ustawianiem zmienne
 
     # Function prints current settings for client
-    def printClientSettings(self): 
+    def printCustomerSettings(self):
         print("Shoping time: ", self.getShopingTime())
         print("Average cost of shoping cart: ", self.getAverageCartCost())
         print("Shoping time abounde: ", self.getShopingTimeAbounde())
-        print("Number of clients: ", self.getNumberOfClients())
+        print("Number of clients: ", self.getNumberOfCustomers())
 
     # Function sets all of the client fileds by user
     def setSettings(self):
@@ -67,7 +67,8 @@ class Client:
         self.setShopingTimeAbounde(self.readInput())
         print("Enter number of clients: ")
         self.setNumberOfCielnts(self.readInput())
-    
+
+
     def readInput(self):
         tmp = input("> ")
         try:
@@ -91,9 +92,8 @@ class Client:
         return self.__averageCartCost
     def getShopingTimeAbounde(self):
         return self.__shopingTimeAbounde
-    def getNumberOfClients(self):
+    def getNumberOfCustomers(self):
         return self.__numberOfCilents
-        
 
     # SETTERS
     def setShopingTime(self, shopingTime):

@@ -1,12 +1,12 @@
-from .MenuConsts import MenuConsts as menuConsts
-from ..settings.Setting import Setting
-from ..simulationElements import Shop, ProfitCalculator,  Queue
-from ..simulationElements.Time import Time
-from ..simulationElements.Queue import Queue
-from ..simulationElements.Client import Client
-from ..simulationElements.Shop import Shop
-from ..simulationElements.Employee import Employee
-from ..simulationElements.ProfitCalculator import ProfitCalculator
+from src.menu.MenuConsts import MenuConsts as menuConsts
+from src.settings.Setting import Setting
+from src.simulationElements import Shop, ProfitCalculator, Queue
+from src.simulationElements.Time import Time
+from src.simulationElements.Queue import Queue
+from src.simulationElements.Customer import Client
+from src.simulationElements.Shop import Shop
+from src.simulationElements.Employee import Employee
+from src.simulationElements.ProfitCalculator import ProfitCalculator
 import os
 import random
 import numpy as np
@@ -67,10 +67,10 @@ class Menu:
         # Przetwarzanie klientów dla każdej godziny zmiany
         for hour in range(start_time, end_time):
             self.time.current_time = hour
-            clients_this_hour = self.generate_clients()
+            clients_this_hour = self.generate_customers()
             for client in clients_this_hour:
-                self.queue.add_client(client)
-            self.process_clients_queue()
+                self.queue.add_customer(client)
+            self.process_customers_queue()
 
     def generate_customers(self):
         # Generowanie klientów z krzywej gaussa, z najwyższym punktem około godziny 15
@@ -80,7 +80,7 @@ class Menu:
 
     def process_customers_queue(self):
         # Przetwarzanie kolejki klientów
-        while not self.queue.is_empty() and self.shop.is_open():
+        while not self.queue.is_empty() and self.shop.is_open(self.time):
             for employee in self.employees:
                 if employee.is_on_shift(self.time.current_time):
                     # Obsłuż klientów, zakładając, że każdy pracownik może obsłużyć około 3 klientów na minutę
@@ -169,17 +169,15 @@ class Menu:
         elif menuConsts.saveToFile == self.getOption():
             self.saveToFile()
         elif menuConsts.runSim == self.getOption():
-            self.runSimulation()
+            self.startSimulation()
         elif menuConsts.exitApp == self.getOption():
             self.exitApp()
 
 
     def printSimulationSettings(self):
-        print("Print Simulation Settings")
-        return
+        self.settings.printAllSettings()
     def simulationSettings(self):
-        print("Set Simulation setting")
-        return
+        self.settings.settingMenuRunner(2)
     def printChart(self):
         # Utwórz nową figurę o numerze 0 i rozdzielczości 120 dpi
         plt.figure(0,dpi=120)
@@ -190,8 +188,13 @@ class Menu:
         plt.show()
         return
     def printResults(self):
-        print("Print results")
-        return
+        if self.profit_calculator:
+            daily_profit = self.profit_calculator.daily_profit
+            potential_profit_lost = self.profit_calculator.potential_profit_lost
+            print(f"Daily profit: {daily_profit}")
+            print(f"Potential profit lost: {potential_profit_lost}")
+        else:
+            print("No results available. Please run the simulation first.")
     #
     def saveToFile(self):
         print("Save file")
@@ -221,13 +224,13 @@ class Menu:
         status = os.system('clear')
         if status != 0:
             os.system('cls')
-        
+
     # Checks if the input of user which is an argument is correct value from the range of numbers
     def handleInput(self, input, lowerLimit, higherLimit):
-        if lowerLimit.value > int(input) or higherLimit.value < int(input):
-            return False 
+        if lowerLimit > int(input) or higherLimit < int(input):
+            return False
         else:
-           return True 
+            return True
 
 
 # GETTERS AND SETTERS
