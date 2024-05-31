@@ -109,5 +109,4 @@ class Setting:
         return self.__shop
 
 
-        
-        
+                

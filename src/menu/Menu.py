@@ -18,6 +18,7 @@ class Menu:
         self.shop = None
         self.time = Time()
         self.profit_calculator = None
+        self.potential_profit_lost = 0;
         self.queue = Queue()
         self.employees = []
         self.option = 0
@@ -45,6 +46,7 @@ class Menu:
         self.loss.append(self.profit_calculator.calculate_daily_loss())
 
     def create_random_shop(self):
+        # Należy dodać opcje tworzenia losowego sklepu lub tego zaincjalizowanego przez user-a
         # Losuj liczbę pracowników, kas normalnych i samoobsługowych
         num_employees = random.randint(1, 10)  # przykładowy zakres
         num_regular_checkouts = random.randint(1, 5)
@@ -79,6 +81,8 @@ class Menu:
         return [Client() for _ in range(num_customers)]
 
     def process_customers_queue(self):
+        if self.shop is None or self.profit_calculator is None:
+            raise ValueError("Simulation error!")
         # Przetwarzanie kolejki klientów
         while not self.queue.is_empty() and self.shop.is_open(self.time):
             for employee in self.employees:
@@ -86,8 +90,9 @@ class Menu:
                     # Obsłuż klientów, zakładając, że każdy pracownik może obsłużyć około 3 klientów na minutę
                     customers_to_process = min(self.queue.get_length(), employee.process_customers(1))
                     for _ in range(customers_to_process):
-                        customer = self.queue.remove_customer()
-                        self.profit_calculator.add_profit(customer.get_spent_money())
+                        customer = self.queue.remove_customer(0)
+                        if customer is not None:
+                            self.profit_calculator.add_profit(customer.get_spent_money())
                     # Sprawdź, czy klienci nie oczekiwali zbyt długo
                     self.queue.remove_long_waiting_customers(30)  # 30 minut
 
@@ -135,7 +140,7 @@ class Menu:
         tmp = 0
         while not isInputCorrect:
             tmp = self.inputFromUser()
-            isInputCorrect = self.handleInput(tmp, lowerLimit, higherLimit)  
+            isInputCorrect = self.handleUserInput(tmp, lowerLimit, higherLimit)  
         return int(tmp) 
                  
 
@@ -150,7 +155,7 @@ class Menu:
             return 0
 
     # Checks if the input of user which is an argument is correct value from the range of numbers
-    def handleInput(self, input, lowerLimit, higherLimit):
+    def handleUserInput(self, input, lowerLimit, higherLimit):
         if lowerLimit > int(input) or higherLimit < int(input):
             return False
         else:
@@ -161,8 +166,6 @@ class Menu:
         if menuConsts.printSimulationSettings == self.getOption():
             self.printSimulationSettings()
         elif menuConsts.setSimulationSettings == self.getOption():
-            self.simulationSettings()
-        elif menuConsts.printChart == self.getOption():
             self.printChart()
         elif menuConsts.printResults == self.getOption():
             self.printResults()
@@ -189,8 +192,8 @@ class Menu:
         return
     def printResults(self):
         if self.profit_calculator:
-            daily_profit = self.profit_calculator.daily_profit
-            potential_profit_lost = self.profit_calculator.potential_profit_lost
+            daily_profit = self.profit_calculator.daily_profit 
+            potential_profit_lost = self.profit_calculator.get_potential_profit_lost()
             print(f"Daily profit: {daily_profit}")
             print(f"Potential profit lost: {potential_profit_lost}")
         else:

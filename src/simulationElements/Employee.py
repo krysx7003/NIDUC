@@ -40,7 +40,7 @@ class Employee:
 
     def report_performance(self):
         # Generuj raport o wydajności pracownika
-        if self.on_shift:
+        if self.on_shift and self.shift_start is not None:
             worked_time = datetime.datetime.now() - self.shift_start
         else:
             worked_time = self.shift_end - self.shift_start if self.shift_end else datetime.timedelta()

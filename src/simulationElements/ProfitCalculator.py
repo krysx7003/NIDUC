@@ -3,6 +3,8 @@ class ProfitCalculator:
         self.shop = shop
         self.daily_profit = 0
         self.daily_loss = 0
+        self.potential_daily_lose =  0
+        self.potential_profit_lost: int  = 0
 
     def calculate_daily_profit(self):
         # ... Logika do obliczania dziennego zysku i potencjalnego zysku
@@ -17,3 +19,6 @@ class ProfitCalculator:
 
     def add_potentials_profit(self,profit_lost):
         self.daily_loss += profit_lost     
+    
+    def get_potential_profit_lost(self):
+        return self.potential_profit_lost
