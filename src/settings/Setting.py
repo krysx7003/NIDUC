@@ -107,6 +107,10 @@ class Setting:
 # GETTERS                    
     def getShop(self):
         return self.__shop
+# SETTERS
+    def setShop(self, shop):
+        if (shop is not None and isinstance(shop, Shop)):
+            self.__shop = shop
 
 
                 
