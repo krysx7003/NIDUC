@@ -29,9 +29,9 @@ class Menu:
 
     # ... [inne metody klasy]
 
-    def simulate_day(self):
+    def simulate_day(self, dataSource):
         # Losowanie sklepu zgodnie z poleceniem 1.
-        self.shop = self.create_random_shop()
+        self.shop = self.create_random_shop(dataSource)
         self.profit_calculator = ProfitCalculator(self.shop)
         # Symulacja zmian zgodnie z poleceniem 2.
         for shift in range(1, 3):
@@ -45,21 +45,18 @@ class Menu:
         self.profit.append(self.profit_calculator.calculate_daily_profit())
         self.loss.append(self.profit_calculator.calculate_daily_loss())
 
-    def create_random_shop(self):
-        # Należy dodać opcje tworzenia losowego sklepu lub tego zaincjalizowanego przez user-a
-        # Losuj liczbę pracowników, kas normalnych i samoobsługowych
-        num_employees = random.randint(1, 10)  # przykładowy zakres
-        num_regular_checkouts = random.randint(1, 5)
-        num_self_service_checkouts = random.randint(1, 5)
+    # Method creates or fetches shop from the user options and creates new employees for that
+    def create_random_shop(self, dataSource):
+        if (dataSource == 1):
+            shop = self.settings.getShop()
+        else: 
+            shop = Shop()
+            shop.setWorkerNumber(random.randint(1,10))
+            shop.setRegularCheckoutsNumber(random.randint(1,5))
+            shop.setSelfServiceCheckoutsNumber(random.randint(1,5))
 
         # Tworzenie pracowników
-        self.employees = [Employee(i, f'Pracownik_{i}') for i in range(num_employees)]
-
-        # Tworzenie sklepu
-        shop = Shop()
-        shop.setWorkerNumber(num_employees)
-        shop.setRegularCheckoutsNumber(num_regular_checkouts)
-        shop.setSelfServiceCheckoutsNumber(num_self_service_checkouts)
+        self.employees = [Employee(i, f'Pracownik_{i}') for i in range(shop.getWorkerNumber())]
         return shop
 
     def run_shift(self, shift):
@@ -114,12 +111,12 @@ class Menu:
             self.mainMenuControler()
             self.clearTerminal()
     # Metoda pobiera długoś symulacji i ją wykonuje
-    def simmulationRunner(self):
+    def simmulationRunner(self, dataSource):
         print("How long should simmulation run")
         daysToRun = self.readInput()
         currentDay = 1
         for currentDay in range(1,daysToRun):
-            self.simulate_day()
+            self.simulate_day(dataSource)
             self.days.append(currentDay)
 
     # Print main menu with options
@@ -139,20 +136,9 @@ class Menu:
         isInputCorrect = False  
         tmp = 0
         while not isInputCorrect:
-            tmp = self.inputFromUser()
+            tmp = self.readInput()
             isInputCorrect = self.handleUserInput(tmp, lowerLimit, higherLimit)  
         return int(tmp) 
-                 
-
-    # Method takes input from the user and tries to convert it to number. In case of exception method returns 0
-    def inputFromUser(self):
-        tmp = input("> ")
-        try:
-            number = int(tmp)
-            return  number
-        except(ValueError, TypeError):
-            print("Option must be a number")
-            return 0
 
     # Checks if the input of user which is an argument is correct value from the range of numbers
     def handleUserInput(self, input, lowerLimit, higherLimit):
@@ -198,14 +184,28 @@ class Menu:
             print(f"Potential profit lost: {potential_profit_lost}")
         else:
             print("No results available. Please run the simulation first.")
-    #
+    
+    # Method chcecks if the simulation was runned and if there was a simulation function saves the results to simulationResult.txt file 
     def saveToFile(self):
-        print("Save file")
+        if self.profit_calculator is None:
+            print("No results available. Please run the simulation first.")
+            return
+        with open('simulationResult.txt','a') as file:
+            file.write("---------------------------------------------------------------------\n")
+            file.write("Daily profit: " + str(self.profit_calculator.daily_profit)  + "\n")
+            file.write("Potential profit lost: " + str(self.profit_calculator.get_potential_profit_lost()) + "\n")
+            file.write("---------------------------------------------------------------------\n")
         return 
     # Funkcja zaczyna symulacje
     def startSimulation(self):
-        self.simmulationRunner()
+        self.simmulationRunner(self.determinDataSource())
         return
+    def determinDataSource(self):
+        print(f"What should be source of data for simulation?")
+        print(f"1. Saved in options")
+        print(f"2. Randomly generated")
+        return self.inputController(0,3)
+        
     def exitApp(self):
         self.shouldExit = True
         return 
