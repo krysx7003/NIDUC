@@ -163,6 +163,8 @@ class Menu:
             self.saveToFile()
         elif menuConsts.runSim == self.getOption():
             self.startSimulation()
+        elif menuConsts.openResultFile == self.getOption():
+            self.openResultFile()
         elif menuConsts.exitApp == self.getOption():
             self.exitApp()
 
@@ -200,8 +202,12 @@ class Menu:
                 file_content = file.read()
                 print(f"Content of result file: \n")
                 print(file_content)
+        except FileNotFoundError:
+            print("File not found.")
+        except PermissionError:
+            print("Premission denied. Please check your permission.")
         except Exception as e:
-            print(f"Failed to open file: {e}")
+            print(f"An unexpected error occured: {e}")
 
     # Method chcecks if the simulation was runned and if there was a simulation function saves the results to simulationResult.txt file 
     def saveToFile(self):
