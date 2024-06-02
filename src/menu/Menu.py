@@ -118,9 +118,15 @@ class Menu:
         print("How long should simmulation run")
         daysToRun = self.readInput()
         currentDay = 1
+        modulo = daysToRun/10
         for currentDay in range(1,daysToRun):
             self.simulate_day(dataSource)
             self.days.append(currentDay)
+            if currentDay % modulo == 0:
+                print(f"Results of simulation after {currentDay} days:\n")
+                self.printResults()
+                print("\n")
+            
 
     # Print main menu with options
     def printMainMenu(self):
