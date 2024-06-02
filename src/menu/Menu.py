@@ -201,7 +201,7 @@ class Menu:
         else:
             print("No results available. Please run the simulation first.")
     
-    # Method returns to the user content of the file with result of the simulation current and previous one (not working currently)
+    # Method returns to the user content of the file with result of the simulation current and previous one 
     def openResultFile(self):
         try: 
             with open('simulationResult.txt','r') as file:

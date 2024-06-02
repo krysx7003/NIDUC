@@ -8,6 +8,7 @@ class Client:
         self.actual_cart_cost = random.normalvariate(self.__averageCartCost,10) # Na podstawie średniej wartości wyznacza losową liczbę, 10 to odchylenie std
         self.__shopingTimeAbounde = CONST.DEF_SHOPING_TIME_ABOUNDE
         self.__numberOfCilents = CONST.DEF_NUMBER_OF_CLIENTS
+        self.__satisfactionLevel = CONST.DEF_SATISFACTION_LEVEL
         self.time_waited = 0
 
     # Function prints the option for client class
@@ -26,6 +27,8 @@ class Client:
             print("Current time after which clients will leave the shop: ", self.getShopingTimeAbounde())
         elif (usrInput == CONST.CLIENT_NUM):
             print("Current number of clients: ", self.getNumberOfCustomers())
+        elif (usrInput == CONST.SATISFACTION_LEVEL):
+            print("Current basic satisfaction level: ", self.getSatisfactionLevel())
         elif (usrInput == CONST.ALL_CLIENT):
                 self.printCustomerSettings()
 
@@ -42,6 +45,9 @@ class Client:
         elif (usrInput == CONST.CLIENT_NUM):
             print("Enter number of clients: ")
             self.setNumberOfCielnts(self.readInput())
+        elif (usrInput == CONST.SATISFACTION_LEVEL):
+            print("Enter satisfaction level of clients: ")
+            self.setSatisfactionLevel(self.readInput())
         elif (usrInput == CONST.ALL_CLIENT):
             self.setSettings()
 
@@ -55,6 +61,7 @@ class Client:
         print("Average cost of shoping cart: ", self.getAverageCartCost())
         print("Shoping time abounde: ", self.getShopingTimeAbounde())
         print("Number of clients: ", self.getNumberOfCustomers())
+        print("Basic satisfaction level: ", self.getSatisfactionLevel())
 
     # Function sets all of the client fileds by user
     def setSettings(self):
@@ -67,6 +74,8 @@ class Client:
         self.setShopingTimeAbounde(self.readInput())
         print("Enter number of clients: ")
         self.setNumberOfCielnts(self.readInput())
+        print("Enter the starting satisfaction level of clients: ")
+        self.setSatisfactionLevel(self.readInput())
 
 
     def readInput(self):
@@ -94,6 +103,8 @@ class Client:
         return self.__shopingTimeAbounde
     def getNumberOfCustomers(self):
         return self.__numberOfCilents
+    def getSatisfactionLevel(self):
+        return self.__satisfactionLevel
 
     # SETTERS
     def setShopingTime(self, shopingTime):
@@ -108,5 +119,8 @@ class Client:
     def setNumberOfCielnts(self, numberOfClients):
         if (numberOfClients > 0):
             self.__numberOfCilents = numberOfClients 
+    def setSatisfactionLevel(self, satisfactionLevel):
+        if (satisfactionLevel >= 0 and satisfactionLevel <= 10):
+            self.__satisfactionLevel = satisfactionLevel
 
 

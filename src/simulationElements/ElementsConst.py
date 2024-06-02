@@ -40,6 +40,7 @@ class ElementsConst:
     DEF_SHOPING_TIME = 30 # time of shoping in mins
     DEF_AVG_CART_COST = 120 # cost of the shoping cart in zł
     DEF_SHOPING_TIME_ABOUNDE = 10 # time after which the clinet will leave the shop
+    DEF_SATISFACTION_LEVEL = 10 # satisfaction will be presented in the scale from 1 to 10
     DEF_NUMBER_OF_CLIENTS = 5 # deafault number of clients in an hour
 
     # Numbers relevent to option
@@ -47,7 +48,8 @@ class ElementsConst:
     CART_VALUE= 2
     ABOUNDE_TIME = 3
     CLIENT_NUM = 4
-    ALL_CLIENT = 5
+    SATISFACTION_LEVEL = 5
+    ALL_CLIENT = 6
 
     # employee
     DEF_AVG_EMPLOYEE_SALARY = 3262
