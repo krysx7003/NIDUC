@@ -1,6 +1,7 @@
 from .ElementsConst import ElementsConst as  CONST
 import random
 class Client: 
+
     # Consturcotr of client class
     def __init__(self):
         self.__shopingTime = CONST.DEF_SHOPING_TIME
@@ -11,6 +12,7 @@ class Client:
         self.__satisfactionLevel = CONST.DEF_SATISFACTION_LEVEL
         self.time_waited = 0
 
+
     # Function prints the option for client class
     def printOptions(self):
         print("Choose client variable to print/set")
@@ -18,6 +20,8 @@ class Client:
             print(i+1, CONST.CLINET_OPTIONS[i])
         print("Enter relevant number: ")
     
+
+    # Function prints specified settings of a client based on the user input
     def printControler(self, usrInput):
         if (usrInput == CONST.SHOPING_TIME):
             print("Current shoping time: ",self.getShopingTime()) 
@@ -32,6 +36,8 @@ class Client:
         elif (usrInput == CONST.ALL_CLIENT):
                 self.printCustomerSettings()
 
+
+    # Function sets settings of a client based on the user input
     def setController(self, usrInput):
         if (usrInput == CONST.SHOPING_TIME):
             print("Enter shoping time: ")
@@ -51,9 +57,6 @@ class Client:
         elif (usrInput == CONST.ALL_CLIENT):
             self.setSettings()
 
-        
-
-    # Można obie te funkcje spróbować przy wykorzystaniu zmieniej połaczyć z pojeczyńczym ustawianiem zmienne
 
     # Function prints current settings for client
     def printCustomerSettings(self):
@@ -62,6 +65,7 @@ class Client:
         print("Shoping time abounde: ", self.getShopingTimeAbounde())
         print("Number of clients: ", self.getNumberOfCustomers())
         print("Basic satisfaction level: ", self.getSatisfactionLevel())
+
 
     # Function sets all of the client fileds by user
     def setSettings(self):
@@ -78,6 +82,7 @@ class Client:
         self.setSatisfactionLevel(self.readInput())
 
 
+    # Function reads input of a usre. Input should be provided as a number. In other case function will return 0
     def readInput(self):
         tmp = input("> ")
         try:
@@ -86,13 +91,15 @@ class Client:
         except(ValueError, TypeError):
             return 0
 
-    def get_spent_money(self):
-        return self.actual_cart_cost
 
+    # Function increase time waited by the customer
     def increase_time_waited(self,time_amount):
         self.time_waited += time_amount
-    def time_in_queue(self):
-        return self.time_waited
+
+
+    # Function decrease satisfaction level of a customer    
+    def decrease_satisfaction_level(self):
+        self.__satisfactionLevel -= 1
     
     # GETTERS
     def getShopingTime(self):
@@ -105,6 +112,10 @@ class Client:
         return self.__numberOfCilents
     def getSatisfactionLevel(self):
         return self.__satisfactionLevel
+    def get_spent_money(self):
+        return self.actual_cart_cost
+    def time_in_queue(self):
+        return self.time_waited
 
     # SETTERS
     def setShopingTime(self, shopingTime):
