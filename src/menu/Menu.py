@@ -1,12 +1,11 @@
 from src.menu.MenuConsts import MenuConsts as menuConsts
 from src.settings.Setting import Setting
-from src.simulationElements import Shop, ProfitCalculator, Queue
-from src.simulationElements.Time import Time
-from src.simulationElements.Queue import Queue
-from src.simulationElements.Customer import Client
-from src.simulationElements.Shop import Shop
-from src.simulationElements.Employee import Employee
-from src.simulationElements.ProfitCalculator import ProfitCalculator
+from src.simulationElements.Time import Time #import Customer as Client, Time, Employee,  ProfitCalculator, Queue
+from src.simulationElements.Customer import Client 
+from src.simulationElements.Employee import Employee 
+from src.simulationElements.Queue import Queue 
+from src.simulationElements.ProfitCalculator import ProfitCalculator 
+from src.simulationElements.Result import Result 
 import os
 import random
 import numpy as np
@@ -15,7 +14,7 @@ import matplotlib.pyplot as plt
 class Menu:
     def __init__(self):
         self.settings = Setting()  # I have reamoved the shop variable because the settings variable already containes the shop object so there is no point to do so
-        self.time = Time()
+        self.time =  Time()
         self.profit_calculator = None
         self.potential_profit_lost = 0;
         self.queue = Queue()
@@ -23,8 +22,8 @@ class Menu:
         self.option = 0
         self.shouldExit = False
         self.days = []
-        self.profit = []
-        self.loss = []
+        self.__result = Result()
+        
 
     # ... [inne metody klasy]
 
@@ -42,8 +41,8 @@ class Menu:
                     employee.start_shift(start_time)
             self.run_shift(shift)
         # Podsumowanie dnia
-        self.profit.append(self.profit_calculator.calculate_daily_profit())
-        self.loss.append(self.profit_calculator.calculate_daily_loss())
+        self.__result.getProfit().append(self.profit_calculator.calculate_daily_profit())
+        self.__result.getLoss().append(self.profit_calculator.calculate_daily_loss())
 
     # Method creates or fetches shop from the user options and creates new employees for that
     def create_random_shop(self, dataSource):
@@ -69,6 +68,8 @@ class Menu:
             for client in clients_this_hour:
                 self.queue.add_customer(client)
             self.process_customers_queue()
+            self.queue.tick_time(1)
+            self.queue.descreseClientsSatisfactionLevel();
 
     # Method generates the customers for the simulation
     def generate_customers(self):
@@ -82,6 +83,7 @@ class Menu:
         if self.settings.getShop() is None or self.profit_calculator is None:
             raise ValueError("Simulation error!")
         # Przetwarzanie kolejki klientów
+        numRemovedClients = 0
         while not self.queue.is_empty() and self.settings.getShop().is_open(self.time):
             for employee in self.employees:
                 if employee.is_on_shift(self.time.current_time):
@@ -90,9 +92,11 @@ class Menu:
                     for _ in range(customers_to_process):
                         customer = self.queue.remove_customer(0)
                         if customer is not None:
+                            self.__result.updatedSatisfactionScore(customer.getSatisfactionLevel()) 
                             self.profit_calculator.add_profit(customer.get_spent_money())
                     # Sprawdź, czy klienci nie oczekiwali zbyt długo
-                    self.queue.remove_long_waiting_customers(30)  # 30 minut
+                    numRemovedClients = self.queue.remove_long_waiting_customers(30)  # 30 minut
+                    self.__result.updatedLostClients(numRemovedClients)
 
     # Metoda sprawdzająca, czy klasa jest pusta (potrzebna dla procesowania kolejki)
     def is_empty(self):
@@ -162,6 +166,8 @@ class Menu:
         if menuConsts.printSimulationSettings == self.getOption():
             self.printSimulationSettings()
         elif menuConsts.setSimulationSettings == self.getOption():
+            self.settings.setAllSettings()
+        elif menuConsts.printChart == self.getOption():
             self.printChart()
         elif menuConsts.printResults == self.getOption():
             self.printResults()
@@ -184,8 +190,8 @@ class Menu:
     def printChart(self):
         # Utwórz nową figurę o numerze 0 i rozdzielczości 120 dpi
         plt.figure(0,dpi=120)
-        plt.plot(self.days,self.profit,'o',label="Profit")
-        plt.plot(self.days,self.loss,'o',label="Loss")
+        plt.plot(self.days,self.__result.getProfit(),'o',label="Profit")
+        plt.plot(self.days,self.__result.getLoss(),'o',label="Loss")
         plt.legend()
         # Pojawia się okienko z wykresem
         plt.show()
@@ -196,8 +202,13 @@ class Menu:
         if self.profit_calculator:
             daily_profit = self.profit_calculator.daily_profit 
             potential_profit_lost = self.profit_calculator.get_potential_profit_lost()
+            avgSatisfactionLevel = self.__result.calculateAvgSatisfactionLevel()
             print(f"Daily profit: {daily_profit}")
             print(f"Potential profit lost: {potential_profit_lost}")
+            print(f"Average satisfaction level of customers: {avgSatisfactionLevel}")
+            print("Number of served clients: ", self.__result.getProccessedClients())
+            print("Number of lost clients: ", self.__result.getLostClients())
+           
         else:
             print("No results available. Please run the simulation first.")
     
