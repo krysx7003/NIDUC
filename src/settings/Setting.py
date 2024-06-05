@@ -65,7 +65,7 @@ class Setting:
             self.__client.setController(self.readInput())
             return True
         elif (userInput == CONST.PRINT_SET_SETTINGS):
-            self.setAllAettings()
+            self.setAllSettings()
             return True
         else:
             print("Invalid input")
@@ -81,7 +81,7 @@ class Setting:
             print("----- CLINET SETTINGS -----")
             self.__client.printCustomerSettings()
     
-    def setAllAettings(self):
+    def setAllSettings(self):
         if (isinstance(self.__shop, Shop)):
             print("----- SHOP SETTINGS -----")
             self.__shop.setSettings()

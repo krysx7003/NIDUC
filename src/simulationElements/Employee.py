@@ -46,3 +46,9 @@ class Employee:
             worked_time = self.shift_end - self.shift_start if self.shift_end else datetime.timedelta()
         processed_clients = self.process_customers(worked_time.total_seconds() / 60)
         return f"Pracownik {self.name} ({self.employee_id}) obsłużył {processed_clients} klientów."
+
+    def getEfficiency(self):
+        return self.efficiency
+    def setEfficiency(self, efficiency):
+        if (efficiency >= 1):
+            self.efficiency = efficiency
