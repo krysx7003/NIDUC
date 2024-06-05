@@ -9,7 +9,7 @@ class Client:
         self.actual_cart_cost = random.normalvariate(self.__averageCartCost,10) # Na podstawie średniej wartości wyznacza losową liczbę, 10 to odchylenie std
         self.__shopingTimeAbounde = CONST.DEF_SHOPING_TIME_ABOUNDE
         self.__numberOfCilents = CONST.DEF_NUMBER_OF_CLIENTS
-        self.__satisfactionLevel = CONST.DEF_SATISFACTION_LEVEL
+        self.__satisfactionLevel = random.randint(5,20) 
         self.time_waited = 0
 
 
@@ -131,7 +131,7 @@ class Client:
         if (numberOfClients > 0):
             self.__numberOfCilents = numberOfClients 
     def setSatisfactionLevel(self, satisfactionLevel):
-        if (satisfactionLevel >= 0 and satisfactionLevel <= 10):
+        if (satisfactionLevel >= 0 and satisfactionLevel <= 20):
             self.__satisfactionLevel = satisfactionLevel
 
 
