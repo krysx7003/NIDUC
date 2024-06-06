@@ -6,11 +6,10 @@ class Client:
     def __init__(self):
         self.__shopingTime = CONST.DEF_SHOPING_TIME
         self.__averageCartCost = CONST.DEF_AVG_CART_COST
-        self.actual_cart_cost = random.normalvariate(self.__averageCartCost,10) # Na podstawie średniej wartości wyznacza losową liczbę, 10 to odchylenie std
+        self.__actual_cart_cost = random.normalvariate(self.__averageCartCost,10) # Na podstawie średniej wartości wyznacza losową liczbę, 10 to odchylenie std
         self.__shopingTimeAbounde = CONST.DEF_SHOPING_TIME_ABOUNDE
-        self.__numberOfCilents = CONST.DEF_NUMBER_OF_CLIENTS
         self.__satisfactionLevel = random.randint(5,20) 
-        self.time_waited = 0
+        self.__time_waited = 0
 
 
     # Function prints the option for client class
@@ -29,8 +28,6 @@ class Client:
             print("Current average cart value: ", self.getAverageCartCost())
         elif (usrInput == CONST.ABOUNDE_TIME):
             print("Current time after which clients will leave the shop: ", self.getShopingTimeAbounde())
-        elif (usrInput == CONST.CLIENT_NUM):
-            print("Current number of clients: ", self.getNumberOfCustomers())
         elif (usrInput == CONST.SATISFACTION_LEVEL):
             print("Current basic satisfaction level: ", self.getSatisfactionLevel())
         elif (usrInput == CONST.ALL_CLIENT):
@@ -48,9 +45,6 @@ class Client:
         elif (usrInput == CONST.ABOUNDE_TIME):
             print("Enter time after which the client wil leave the shop: ")
             self.setShopingTimeAbounde(self.readInput())
-        elif (usrInput == CONST.CLIENT_NUM):
-            print("Enter number of clients: ")
-            self.setNumberOfCielnts(self.readInput())
         elif (usrInput == CONST.SATISFACTION_LEVEL):
             print("Enter satisfaction level of clients: ")
             self.setSatisfactionLevel(self.readInput())
@@ -63,7 +57,6 @@ class Client:
         print("Shoping time: ", self.getShopingTime())
         print("Average cost of shoping cart: ", self.getAverageCartCost())
         print("Shoping time abounde: ", self.getShopingTimeAbounde())
-        print("Number of clients: ", self.getNumberOfCustomers())
         print("Basic satisfaction level: ", self.getSatisfactionLevel())
 
 
@@ -76,8 +69,6 @@ class Client:
         self.setAverageCartCost(self.readInput())
         print("Enter time after clinet will aboundon shop: ")
         self.setShopingTimeAbounde(self.readInput())
-        print("Enter number of clients: ")
-        self.setNumberOfCielnts(self.readInput())
         print("Enter the starting satisfaction level of clients: ")
         self.setSatisfactionLevel(self.readInput())
 
@@ -94,7 +85,7 @@ class Client:
 
     # Function increase time waited by the customer
     def increase_time_waited(self,time_amount):
-        self.time_waited += time_amount
+        self.__time_waited += time_amount
 
 
     # Function decrease satisfaction level of a customer    
@@ -108,14 +99,12 @@ class Client:
         return self.__averageCartCost
     def getShopingTimeAbounde(self):
         return self.__shopingTimeAbounde
-    def getNumberOfCustomers(self):
-        return self.__numberOfCilents
     def getSatisfactionLevel(self):
         return self.__satisfactionLevel
     def get_spent_money(self):
-        return self.actual_cart_cost
+        return self.__actual_cart_cost
     def time_in_queue(self):
-        return self.time_waited
+        return self.__time_waited
 
     # SETTERS
     def setShopingTime(self, shopingTime):
@@ -127,9 +116,6 @@ class Client:
     def setShopingTimeAbounde(self, abounde):
         if ( abounde > 0):
             self.__shopingTimeAbounde = abounde 
-    def setNumberOfCielnts(self, numberOfClients):
-        if (numberOfClients > 0):
-            self.__numberOfCilents = numberOfClients 
     def setSatisfactionLevel(self, satisfactionLevel):
         if (satisfactionLevel >= 0 and satisfactionLevel <= 20):
             self.__satisfactionLevel = satisfactionLevel
