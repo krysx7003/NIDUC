@@ -47,6 +47,7 @@ class Employee:
         processed_clients = self.process_customers(worked_time.total_seconds() / 60)
         return f"Pracownik {self.name} ({self.employee_id}) obsłużył {processed_clients} klientów."
 
+# GETTERS AND SETTER
     def getEfficiency(self):
         return self.efficiency
     def setEfficiency(self, efficiency):

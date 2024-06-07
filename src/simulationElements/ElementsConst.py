@@ -18,6 +18,7 @@ class ElementsConst:
     DEF_WORKER_NUMBER = 2 
     DEF_TIME_OF_PRODUCT_PLACMENT = 10 # time of product placment in min 
     DEF_RUSH_HOURS = 16 # hour from 0-24 when the rush hour occures
+    DEF_PROFIT_MARGIN = 0.4
 
     #Number relevent to option
     VALUE = 1

@@ -9,7 +9,7 @@ class Shop:
         self.__workerNumber = CONST.DEF_WORKER_NUMBER
         self.__timeOfProductPlacment = CONST.DEF_TIME_OF_PRODUCT_PLACMENT
         self.__rushHour = CONST.DEF_RUSH_HOURS
-        self.profit_margin = 0.4
+        self.__profit_margin = CONST.DEF_PROFIT_MARGIN
 
     # Functions prints the options for the shop class
     def printOptions(self):
@@ -35,7 +35,7 @@ class Shop:
         elif (input == CONST.RUSH_HOUR):
             print("Current rush hour: ", self.getRushHour())
         elif(input == CONST.PROFIT_MARGIN):
-            print("Current profit margin: ", self.profit_margin)
+            print("Current profit margin: ", self.__profit_margin)
         elif (input == CONST.ALL_SHOP):
             self.printSettings()
 
@@ -85,7 +85,8 @@ class Shop:
         print("Number of workers: ", self.getWorkerNumber())
         print("Time of product placment: ", self.getTimeOfProductPlacment())
         print("Rush hour: ", self.getRushHour())
-        print("Profit margin: ", self.profit_margin)
+        print("Profit margin: ", self.__profit_margin)
+
     # Function sets all the settings for the shop simulation
     def setSettings(self):
         print("WARTNING! In case of incorrect input data value of field will remain as deafult")
@@ -105,6 +106,7 @@ class Shop:
         self.setRushHour(self.readInput())
         print("Enter profit margin for the shop: ")
         self.set_profit_margin(float(input("> ")))
+
     # Method read input from user
     def readInput(self):
         tmp = input("> ")
@@ -156,9 +158,9 @@ class Shop:
     def setRushHour(self, rushHour):
         if (rushHour >= 0 and rushHour <= 24):
             self.__rushHour = rushHour
-    def set_profit_margin(self, profit_margin):
-        if 0 <= profit_margin <= 1:
-            self.profit_margin = profit_margin
+    def set_profit_margin(self, __profit_margin):
+        if 0 <= __profit_margin <= 1:
+            self.__profit_margin = __profit_margin
         else:
             print("Profit margin must be between 0 and 1")
 

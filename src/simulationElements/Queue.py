@@ -31,13 +31,13 @@ class Queue:
             self.clients[_].increase_time_waited(time_amount)
 
 
-    # Metoda która wyszukuje kilentów którzy czekali zbyt długo a następnie ich usuwa
-    def remove_long_waiting_customers(self,long_time):
+    # Method removes clients which were waating for too long already 
+    def remove_long_waiting_customers(self):
         self.profit_lost = 0
         i = 0
         removedClients = 0
         while i < len(self.clients)-1:
-            if(self.clients[i].time_in_queue()>=long_time):
+            if(self.clients[i].time_in_queue() >= self.clients[i].getShopingTimeAbounde()):
                 # Pieniądze które kilent mógł wydać zostają dodane do strat
                 self.profit_lost += self.clients[i].get_spent_money()
                 self.remove_customer(i)

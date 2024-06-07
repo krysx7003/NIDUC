@@ -13,12 +13,14 @@ class ProfitCalculator:
         # ... Logika do obliczania dziennego zysku i potencjalnego zysku
         return self.daily_loss
         
-    #Metoda dodająca podany profit do profitu dziennego
+    # Method adds the profit to dailyt_profit
     def add_profit(self,profit):
         self.daily_profit += profit
 
-    def add_potentials_profit(self,profit_lost):
+    # Method adds loos to the the amount that was lost already
+    def add_lost(self,profit_lost):
         self.daily_loss += profit_lost     
     
+    # Method returns potential profit loss
     def get_potential_profit_lost(self):
         return self.potential_profit_lost

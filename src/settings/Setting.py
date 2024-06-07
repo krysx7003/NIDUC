@@ -3,6 +3,7 @@ from ..simulationElements.Shop import Shop
 from ..simulationElements.Customer import Client
 from .SettingsConst import SettingsConst as CONST
 
+# Singletone class which represent the Setting class
 class Setting:
     _instance = None
 
@@ -81,6 +82,7 @@ class Setting:
             print("----- CLINET SETTINGS -----")
             self.__client.printCustomerSettings()
     
+    # Function invokes setting options for the shop and clients 
     def setAllSettings(self):
         if (isinstance(self.__shop, Shop)):
             print("----- SHOP SETTINGS -----")
