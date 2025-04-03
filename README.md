@@ -1,5 +1,7 @@
 # Niezawodność i diagnostyka układów cyfrowych
 
+## Opis
+
 Projekt jest prostą symulacją sklepu. Symulacja ma odpowiedzieć na pytanie:
 Czy w danym sklepie opłaca się postawić kasę samoobsługową czy może zatrudnić więcej pracowników? Wykonawcy Krzysztof Zalewa, Jakub Maciocha, ...
 
@@ -17,3 +19,11 @@ najwyższy punkt wypadał ~15)
 10. W zależności od średniego czasu oczekiwania może zostać otwarta dodatkowa
 kasa
 11. Pod koniec dnia liczony jest zysk i potencjalny zysk
+
+## Obsługa
+
+1. Aby program uruchomił się poprawnie należy użyć pliku main.py
+2. Po uruchomieniu wydrukowane zostanie menu pozwalające na uruchomienie symulacji
+3. Po wybraniu symulacji można użyć opcji zapisanych( można je zmienić ) lub zupełnie losowych
+4. Długość symulacji podawana jest w dniach
+5. W konoli zostają wydrukowane statystki symulacji (Można je zapisać lub zwizualizować)
